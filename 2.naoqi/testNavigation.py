@@ -146,7 +146,7 @@ class Scan():
                     print("Face detected")
                     volunteer_found = True
 
-        self.say("J'ai trouvé un humain! salut!")
+        self.say("Je trouvais un humain! salut!")
         self.stand()
         try:
             self.tracker.registerTarget("Face", 0.15)
@@ -436,7 +436,7 @@ class Scan():
     def steps_with_behaviors(self):
         self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
         print "arrive at point a, say something:"
-        self.say("Bonjour, je m'appelle Pepper et je ferai quelques démonstrations.")
+        self.say("Bonjour, je m'appelle Pepper et je ferai quelques demonstrations.")
         self.say("Je peux marcher.")
         
         self.navigation.navigateToInMap([self.b[0][0],self.b[0][1],0.0])
@@ -455,10 +455,10 @@ class Scan():
 
         self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
         print "arrive at point e(a), say something:"
-        self.say("Je suis retourné à l'endroit d'origine.")
+        self.say("Je suis retourne a l'endroit d'origine.")
         self.pick_a_human()# pick a humain
 
-        self.say("Ma démo est terminée.")
+        self.say("Ma demonstration est terminee.")
         self.posture.goToPosture("StandInit",0.5)
 
     def steps(self):
