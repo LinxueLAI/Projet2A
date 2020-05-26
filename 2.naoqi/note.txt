@@ -30,3 +30,5 @@ le robot doit reconnaitre un visage humain avec et sans masque
 
 1）测试一下testRobot.py中的explore 和show_map 看保存下来的map是什么样子的
 2）测试testNavigation.py
+
+

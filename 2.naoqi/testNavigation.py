@@ -9,13 +9,14 @@ class Scan():
     def __init__(self): # __init__ is the first thing to run when the program is started
         #in the function __init__ we call every module that is going to be used throughout the present script.
         ip = "192.168.2.169"
-        # self.tts = ALProxy("ALTextToSpeech", ip, 9559)
+        self.tts = ALProxy("ALTextToSpeech", ip, 9559)
         self.motion = ALProxy("ALMotion", ip, 9559)
         self.posture = ALProxy("ALRobotPosture", ip, 9559)
-        # self.tracker = ALProxy("ALTracker", ip, 9559)
-        # self.memory = ALProxy("ALMemory","172.16.0.77",9559)
+        self.tracker = ALProxy("ALTracker", ip, 9559)
+        self.memory = ALProxy("ALMemory","172.16.0.77",9559)
         # self.perception = ALProxy("ALPeoplePerception", ip, 9559)
         self.navigation = ALProxy("ALNavigation",ip,9559)
+        self.face_detection = ALProxy("ALFaceDetection",ip,9559)
     
         #posture standinit gives a more natural position for the robot. instead of being looking to the sky it looks in the direction of the horizon
         self.posture.goToPosture("StandInit",0.5)
@@ -24,13 +25,146 @@ class Scan():
         stiffnesses  = 1.0
         names ="Body"
         self.motion.setStiffnesses(names, stiffnesses)
+    
+    # some behaviors: say,dance, find a humian,shake hands...
+    def say(self, text):
+        self.tts.say(text)
+        print("[INFO]: Robot says: " + text)
+        
+    def dance(self,motion):
+        names = list()
+        times = list()
+        keys = list()
 
-    def explore(self, force=False):
-      
+        names.append("HeadPitch")
+        times.append([1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.16, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([-0.476475, 0.338594, -0.476475, 0.338594, -0.476475, 0.338594, -0.476475, 0.338594, 0.0680678, -0.476475, 0.338594, -0.476475, 0.338594, -0.476475, 0.338594, -0.476475, 0.338594, -0.17185])
+
+        names.append("HeadYaw")
+        times.append([1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.16, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([-0.745256, 0.0411095, -0.745256, 0.0411095, -0.745256, 0.018508, -0.745256, 0.289725, 0.425684, 0.745256, -0.0411095, 0.745256, -0.0411095, 0.745256, -0.018508, 0.745256, -0.289725, 0.00916195])
+
+        names.append("HipPitch")
+        times.append([0.68, 1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([-0.376033, -0.036954, -0.344024, -0.0404086, -0.339835, -0.038321, -0.341769, -0.0367355, -0.34817, -0.035085, -0.341769, -0.0382761, -0.339629, -0.0396041, -0.341605, -0.0362713, -0.343065, -0.0495279])
+
+        names.append("HipRoll")
+        times.append([1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+        names.append("KneePitch")
+        times.append([0.68, 1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([0.166965, -0.00379234, 0.185949, -0.0129339, 0.180821, -0.00320919, 0.187035, -0.00931236, 0.182162, -0.0111253, 0.187035, -0.00683206, 0.184441, -0.0119436, 0.179202, -0.0114876, 0.187691, -0.013167])
+
+        names.append("LElbowRoll")
+        times.append([0.68, 1.04, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.12, 8.48, 8.8, 9.2, 9.64, 10.12, 10.6, 11, 11.44, 11.92, 12.36, 12.76, 13.2, 13.68, 14.16, 14.56, 15, 15.6, 16.2, 16.4])
+        keys.append([-1.37289, -1.12923, -0.369652, -0.202446, -0.369652, -0.202446, -0.369652, -0.202446, -0.369652, -0.202446, -0.820305, -0.23305, -0.138102, -1.309, -0.257754, -1.4591, -0.138102, -1.309, -0.257754, -1.4591, -0.138102, -1.309, -0.257754, -1.4591, -0.138102, -1.309, -0.257754, -0.984366, -0.513992, -0.424876])
+
+        names.append("LElbowYaw")
+        times.append([0.68, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.12, 8.48, 8.8, 9.2, 9.64, 10.12, 10.6, 11, 11.44, 11.92, 12.36, 12.76, 13.2, 13.68, 14.16, 14.56, 15, 15.6, 16.2, 16.4])
+        keys.append([-0.65506, -0.380475, -0.618244, -0.380475, -0.618244, -0.380475, -0.618244, -0.380475, -0.618244, 0.410152, 0.818273, 0.851412, 0.0750492, 0.00157596, 0.460767, 0.851412, 0.0750492, 0.00157596, 0.460767, 0.851412, 0.0750492, 0.00157596, 0.460767, 0.851412, 0.0750492, 0.00157596, -1.34565, -1.22484, -1.21037])
+
+        names.append("LHand")
+        times.append([0.68, 1.04, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.48, 8.8, 9.2, 9.64, 10.12, 10.6, 11, 11.44, 11.92, 12.36, 12.76, 13.2, 13.68, 14.16, 14.56, 15, 15.6, 16.2, 16.4])
+        keys.append([0.2, 0.6, 0.2648, 0.264, 0.2648, 0.264, 0.2648, 0.264, 0.2648, 0.264, 0.663802, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.5284, 0.936396, 0.950347, 0.2968])
+
+        names.append("LShoulderPitch")
+        times.append([0.68, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.12, 8.48, 8.8, 9.64, 10.6, 11.44, 12.36, 13.2, 14.16, 15, 16.4])
+        keys.append([0.97784, 1.29573, 1.40466, 1.29573, 1.40466, 1.29573, 1.40466, 1.29573, 1.40466, 0.172788, -1.04904, -1.19188, 0.995607, -1.19188, 0.995607, -1.19188, 0.995607, -1.19188, 0.995607, 1.47106])
+
+        names.append("LShoulderRoll")
+        times.append([0.68, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.48, 8.8, 9.2, 9.64, 10.12, 10.6, 11, 11.44, 11.92, 12.36, 12.76, 13.2, 13.68, 14.16, 14.56, 15, 15.6, 16.2])
+        keys.append([0.500047, 0.401871, 0.35585, 0.401871, 0.35585, 0.401871, 0.35585, 0.401871, 0.35585, 0.886453, 0.966481, 1.23332, 0.324005, 1.23332, 0.966481, 1.23332, 0.324005, 1.23332, 0.966481, 1.23332, 0.324005, 1.23332, 0.966481, 1.23332, 0.324005, 0.407503, 0.146991])
+
+        names.append("LWristYaw")
+        times.append([0.68, 1.04, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.48, 8.8, 9.64, 10.6, 11.44, 12.36, 13.2, 14.16, 15, 16.2, 16.4])
+        keys.append([0.11961, -0.289725, -0.395814, -0.420357, -0.395814, -0.420357, -0.395814, -0.420357, -0.395814, -0.420357, -0.122946, -0.107338, -0.400331, -0.107338, -0.400331, -0.107338, -0.400331, -0.107338, -0.400331, 0.000370312, 0.0827939])
+
+        names.append("RElbowRoll")
+        times.append([0.68, 1.08, 1.52, 1.92, 2.36, 2.84, 3.32, 3.72, 4.16, 4.64, 5.08, 5.48, 5.92, 6.4, 6.88, 7.28, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 15.64, 16.24, 16.44])
+        keys.append([1.34689, 1.1205, 0.138102, 1.309, 0.257754, 1.4591, 0.138102, 1.309, 0.257754, 1.4591, 0.138102, 1.309, 0.257754, 1.4591, 0.138102, 1.309, 0.257754, 0.372085, 0.369652, 0.202446, 0.369652, 0.202446, 0.369652, 0.202446, 0.369652, 0.202446, 0.82205, 0.519567, 0.429562])
+
+        names.append("RElbowYaw")
+        times.append([0.68, 1.08, 1.52, 1.92, 2.36, 2.84, 3.32, 3.72, 4.16, 4.64, 5.08, 5.48, 5.92, 6.4, 6.88, 7.28, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 15.64, 16.24, 16.44])
+        keys.append([0.59515, 0.567232, -0.851412, -0.0750492, -0.00157596, -0.460767, -0.851412, -0.0750492, -0.00157596, -0.460767, -0.851412, -0.0750492, -0.00157596, -0.460767, -0.851412, -0.0750492, -0.00157596, 0.352279, 0.380475, 0.618244, 0.380475, 0.618244, 0.380475, 0.618244, 0.380475, 0.618244, 1.26711, 1.23132, 1.21028])
+
+        names.append("RHand")
+        times.append([0.68, 1.08, 1.52, 1.92, 2.36, 2.84, 3.32, 3.72, 4.16, 4.64, 5.08, 5.48, 5.92, 6.4, 6.88, 7.28, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24, 16.44])
+        keys.append([0.2, 0.95, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.5284, 0.271478, 0.2648, 0.264, 0.2648, 0.264, 0.2648, 0.264, 0.2648, 0.264, 0.596785, 0.2976])
+
+        names.append("RShoulderPitch")
+        times.append([0.68, 1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([0.915841, -1.19188, 0.995607, -1.19188, 0.995607, -1.19188, 0.995607, -1.19188, 0.995607, 1.281, 1.29573, 1.40466, 1.29573, 1.40466, 1.29573, 1.40466, 1.29573, 1.40466, 1.47268])
+
+        names.append("RShoulderRoll")
+        times.append([0.68, 1.08, 1.52, 1.92, 2.36, 2.84, 3.32, 3.72, 4.16, 4.64, 5.08, 5.48, 5.92, 6.4, 6.88, 7.28, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 15.64, 16.44])
+        keys.append([-0.905123, -1.30837, -0.966481, -1.23332, -0.324005, -1.23332, -0.966481, -1.23332, -0.324005, -1.23332, -0.966481, -1.23332, -0.324005, -1.23332, -0.966481, -1.23332, -0.324005, -0.397371, -0.401871, -0.35585, -0.401871, -0.35585, -0.401871, -0.35585, -0.401871, -0.35585, -0.310669, -0.174533])
+
+        names.append("RWristYaw")
+        times.append([0.68, 1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24, 16.44])
+        keys.append([-0.401949, 0.107338, 0.400331, 0.107338, 0.400331, 0.107338, 0.400331, 0.107338, 0.400331, 0.391888, 0.395814, 0.420357, 0.395814, 0.420357, 0.395814, 0.420357, 0.395814, 0.420357, 0.00501826, 0.108872])
+
+        self.motion.angleInterpolation(names, keys, times, True)
+
+    def unsubscribe_effector(self):
+        self.tracker.unregisterAllTargets()
+        self.tracker.setEffector("None")
+        print("[INFO]: End-effector is unsubscribed")
+    
+    def turn_around(self, speed):
+        self.motion.move(0, 0, speed)
+    
+    def stand(self):
+        self.posture.goToPosture("Stand", 0.5)
+        print("[INFO]: Robot is in default position")  
+
+    def stop_moving(self):
+        self.motion_service.stopMove()
+
+    def pick_a_human(self):
+        volunteer_found = False
+        self.unsubscribe_effector()
+        self.stand()
+        print("[INFO]: Robot is in default position")
+        self.say("Je cherche un humain.")
+        proxy_name = "FaceDetection" + str(numpy.random)
+        print("[INFO]: Pick a volunteer mode started")
+
+        while not volunteer_found:
+            wait = numpy.random.randint(500, 1500) / 1000
+            theta = numpy.random.randint(-10, 10)
+            self.turn_around(theta)
+            time.sleep(wait)
+            self.stop_moving()
+            self.stand()
+            self.face_detection.subscribe(proxy_name, 500, 0.0)
+            for memory in range(5):
+                time.sleep(0.5)
+                output = self.memory.getData("FaceDetected")
+                print("...")
+                if output and isinstance(output, list) and len(output) >= 2:
+                    print("Face detected")
+                    volunteer_found = True
+
+        self.say("J'ai trouvé un humain! salut!")
+        self.stand()
+        try:
+            self.tracker.registerTarget("Face", 0.15)
+            self.tracker.setMode("Move")
+            self.tracker.track("Face")
+            self.tracker.setEffector("RArm")
+            self.get_face_properties()
+
+        finally:
+            time.sleep(2)
+            self.unsubscribe_effector()
+            self.stand()
+            self.face_detection.unsubscribe(proxy_name)
+
+    def explore(self, radius, force=False):
         self.motion.wakeUp() #it is only used if the robot is in rest position.
-
-        # Explore the environement, in a radius of 3 m.
-        radius = 3.0
+        # Explore the environement
+        # radius = 3.0
         error = self.navigation.explore(radius)
         if error != 0:
             print "Exploration failed."
@@ -225,11 +359,10 @@ class Scan():
         print "home:"
         print self.home
 
-        
         self.posture.goToPosture("StandInit",0.5)
         return self.home, self.a, self.b, self.c, self.d, self.e, self.f  
 
-    def def_point2(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
+    def def_point_carre(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
         self.navigation.stopLocalization()
         
@@ -280,7 +413,53 @@ class Scan():
         print self.home
         
         self.posture.goToPosture("StandInit",0.5)
-        return self.home, self.a, self.b, self.c, self.d, self.e  
+        return self.home, self.a, self.b, self.c, self.d, self.e
+    
+    def shake_hand(self):
+        self.stand()
+        # Raise a hand to human
+        self.motion.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw", "RHand"], [0.8, 2.5, 1.0], speed)
+        # Wait to touch a hand
+        while True:
+            try:
+                status = self.memory.getData("HandRightBackTouched")
+                if status:
+                    self.motion.angleInterpolationWithSpeed("RHand", 0.0, speed*3)
+                    break
+            except KeyboardInterrupt:
+                break
+        # Get hand down
+        self.motion.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw", "RHand"], [3.5, 0.00, 0.0], 1.0)#1.0=speed max?
+        # Reset position
+        self.stand()
+
+    def steps_with_behaviors(self):
+        self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
+        print "arrive at point a, say something:"
+        self.say("Bonjour, je m'appelle Pepper et je ferai quelques démonstrations.")
+        self.say("Je peux marcher.")
+        
+        self.navigation.navigateToInMap([self.b[0][0],self.b[0][1],0.0])
+        print "arrive at point b, say something:"
+        self.say("Je suis au point B maintenant, je danse.")
+        self.dance()
+
+        self.navigation.navigateToInMap([self.c[0][0],self.c[0][1],0.0])
+        print "arrive at point c, say something:"
+        self.say("Je suis au point C maintenant.Je veux vous serrer la main.")
+        self.shake_hand()
+
+        self.navigation.navigateToInMap([self.d[0][0],self.d[0][1],0.0])
+        print "arrive at point d, say something:"
+        self.say("Je suis au point D maintenant.Je cligne des yeux.")
+
+        self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
+        print "arrive at point e(a), say something:"
+        self.say("Je suis retourné à l'endroit d'origine.")
+        self.pick_a_human()# pick a humain
+
+        self.say("Ma démo est terminée.")
+        self.posture.goToPosture("StandInit",0.5)
 
     def steps(self):
         time.sleep(5)
@@ -308,73 +487,35 @@ class Scan():
         self.posture.goToPosture("StandInit",0.5)
 
     def steps2(self):
-        # time.sleep(5)
-
-        #then the robot starts moving autonomously to the target
-        # self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
         self.navigation.navigateToInMap([0.0,2.0,0.0])
-        # print "wait for 10s"
-        # time.sleep(10)
         print "arrive at a"
-        # print self.a
         self.navigation.navigateToInMap([2.0,2.0,0.0])
-        # self.motion.moveTo(0.0,0.0,-3.1415926/2)
         print "arrive at b"
-        # print self.b
-
         self.navigation.navigateToInMap([2.0,0.0,0.0])
-        # self.motion.moveTo(0.0,0.0,-3.1415926/2)
-
         print "arrive at c"
-        # print self.c
-
-        #the steps followed to make the behaviour. first the robot goes to 3 defined points close to each other to make adjustments to the orientation
         self.navigation.navigateToInMap([0.0,0.0,0.0])
-        # self.motion.moveTo(0.0,0.0,-3.1415926/2)
-
         print "arrive at d"
-        # print self.d
-
         self.navigation.navigateToInMap([0.0,2.0,0.0])
-        # self.motion.moveTo(0.0,0.0,-3.1415926/2)
-
         print "arrive at e"
         print "once again:"
-        # print self.e
         self.navigation.navigateToInMap([0.0,2.0,0.0])
-        # print "wait for 10s"
-        # time.sleep(10)
         print "arrive at a"
-        # print self.a
         self.navigation.navigateToInMap([2.0,2.0,0.0])
-        # self.motion.moveTo(0.0,0.0,-3.1415926/2)
         print "arrive at b"
-        # print self.b
-
         self.navigation.navigateToInMap([2.0,0.0,0.0])
-        # self.motion.moveTo(0.0,0.0,-3.1415926/2)
-
         print "arrive at c"
-        # print self.c
-
-        #the steps followed to make the behaviour. first the robot goes to 3 defined points close to each other to make adjustments to the orientation
         self.navigation.navigateToInMap([0.0,0.0,0.0])
-        # self.motion.moveTo(0.0,0.0,-3.1415926/2)
-
         print "arrive at d:"
-        # print self.d
-
         self.navigation.navigateToInMap([0.0,2.0,0.0])
-        # self.motion.moveTo(0.0,0.0,-3.1415926/2)
-
         print "arrive at e:"
-        #the robot then returns home to rest
+        # the robot then returns home to rest
         # self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
         # print "arrive at home:"
         # print self.home
         self.posture.goToPosture("StandInit",0.5)
         print "steps finished"
 
+# Test1:
 pepper = Scan()
 pepper.motion.setOrthogonalSecurityDistance(0.2)
 # pepper.motion_service.setOrthogonalSecurityDistance(0.1)
@@ -382,20 +523,16 @@ print("OrthogonalSecurityDistance=")
 print(pepper.motion.getOrthogonalSecurityDistance())#0.4
 print("TangentialSecurityDistance=")
 print(pepper.motion.getTangentialSecurityDistance())#0.1
-#After the exploration the robot will stop in a random position
-pepper.explore()
+# After the exploration the robot will stop in a random position
+pepper.explore(10)#radius
 print "exploration is finished"
-#before running the definition of points in map, orientate the robot to the best orientation for your application. 
-# This orientation can be made by hand. it will not affect the coordinate system
-#running the definition of points in map
-# print "now it is sleeping for 10 sec"
-# time.sleep(10)
 print "wait for 10 sec"
 time.sleep(10)
-first=pepper.def_point2()
+first=pepper.def_point_carre()
 print first # return self.home, self.a, self.b, self.c, self.d, self.e
 print "now the robot try to follow some steps:"
-pepper.stepcarre()
+# pepper.stepcarre()
+pepper.steps_with_behaviors()
 # 	-second def-point. Change the coordinates and the number of points that you see fit for your application. see if the path taken by the robot is satisfatory
 # second=pepper.def_point2()
 # print second
