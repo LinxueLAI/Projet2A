@@ -1,0 +1,32 @@
+﻿需要测试：
+handShake.py 握手测试
+dance.py  ----testDance.py
+navigation.py   
+(看一下它是否避障？)
+
+testPepper.py
+(看一下显示camera的情况)----可以显示监测照相机窗口
+robot.py与camera.py是相同的
+
+
+projet思路：
+看一下Navigation这个功能能否实现绕过障碍达到另外一个顶点
+
+当机器人遇到人类时， FaceDetected检测到人类时，停下来，做一些动作。
+
+目标：
+le robot doit suivre une trajectoire en forme de carré  ou de rectangle  , par exemple 3 m x2 m, qui est fixe dans le référentiel absolu.
+le robot doit eviter des obstacles fixes sur cette trajectoire sans perdre la trajectoire
+puis il doit eviter des personnes qui  traversent sa trajectoire 
+le robot doit reconnaître des humains
+le robot doit reconnaitre un visage humain avec et sans masque
+
+机器人必须遵循正方形或矩形形式的轨迹，例如3 m x 2 m，该轨迹固定在绝对参考系中。
+机器人必须避免在该轨迹上固定障碍物而不会丢失该轨迹
+那么他必须避免人们越过他的路
+机器人必须认出人类
+机器人必须识别带或不带口罩的人脸
+
+
+1）测试一下testRobot.py中的explore 和show_map 看保存下来的map是什么样子的
+2）测试testNavigation.py

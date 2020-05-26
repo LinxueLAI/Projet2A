@@ -8,7 +8,7 @@ import qi
 import naoqi
 import sys
 import time
-import HumanGreeter
+from FaceDetected import HumanGreeter
 def main(session):
     #print("errorpos = "+session.positionErrorThresholdPos)
     #print("errorpAng = "+session.positionErrorThresholdAng)
@@ -41,8 +41,8 @@ def main(session):
     #minimum distance between the robot and any obstacle during a move
     motion.setOrthogonalSecurityDistance(0.1)#default:0.4
     motion.setTangentialSecurityDistance(0.05)#defaut:0.1
-    i = 4
-    tts.say("salut!Je peux marcher!")
+    i = 1
+    # tts.say("salut!Je peux marcher!")
     while i>0:#marcher dans une carée
 
         memory_service = session.service("ALMemory")
@@ -54,23 +54,105 @@ def main(session):
 
         # Now you can retrieve sonar data from ALMemory.
         # Get sonar left first echo (distance in meters to the first obstacle).
+        # print(memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front"))
         left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg01/X/Sensor/Value")
-        print(4-i)
-        print(left)
-
-        # Same thing for right.
+        print("X01="+str(left))
         right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg01/Y/Sensor/Value")
-        print(4-i)
-        print(right)
+        print("Y01="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg02/X/Sensor/Value")
+        print("X01="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg02/Y/Sensor/Value")
+        print("Y02="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg03/X/Sensor/Value")
+        print("X03="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg03/Y/Sensor/Value")
+        print("Y03="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg04/X/Sensor/Value")
+        print("X04="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg04/Y/Sensor/Value")
+        print("Y04="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg05/X/Sensor/Value")
+        print("X05="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg05/Y/Sensor/Value")
+        print("Y05="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg06/X/Sensor/Value")
+        print("X06="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg06/Y/Sensor/Value")
+        print("Y06="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg07/X/Sensor/Value")
+        print("X07="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg07/Y/Sensor/Value")
+        print("Y07="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg08/X/Sensor/Value")
+        print("X08="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg08/Y/Sensor/Value")
+        print("Y08="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg09/X/Sensor/Value")
+        print("X09="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg09/Y/Sensor/Value")
+        print("Y09="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg10/X/Sensor/Value")
+        print("X10="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg10/Y/Sensor/Value")
+        print("Y10="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg11/X/Sensor/Value")
+        print("X11="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg11/Y/Sensor/Value")
+        print("Y11="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg12/X/Sensor/Value")
+        print("X12="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg12/Y/Sensor/Value")
+        print("Y12="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg13/X/Sensor/Value")
+        print("X13="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg13/Y/Sensor/Value")
+        print("Y13="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg14/X/Sensor/Value")
+        print("X14="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg14/Y/Sensor/Value")
+        print("Y14="+str(right))
+        print(math.sqrt(math.pow(left,right)))
+
+        left = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg15/X/Sensor/Value")
+        print("X15="+str(left))
+        right = memory_service.getData("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg15/Y/Sensor/Value")
+        print("Y15="+str(right))
+        print(math.sqrt(math.pow(left,right)))
 
         # Unsubscribe from sonars, this will stop sonars (at hardware level)
         # sonar_service.unsubscribe("myApplication")
-        id1 = motion.post.moveTo(2.0, 0.0, 0.0)#2 metre;  1 metre ; 0.5 = 90 degres
+        id1 = motion.post.moveTo(0.1, 0.0, 0.0)#2 metre;  1 metre ; 0.5 = 90 degres
         i = i - 1
         motion.wait(id1, 0)
-        id2 = motion.post.moveTo(0.0, 0.0, 0.5 * math.pi)
-        tts.say("Je tourne a gauche!")
-        motion.wait(id2, 0)
+        # id2 = motion.post.moveTo(0.0, 0.0, 0.5 * math.pi)
+        # tts.say("Je tourne a gauche!")
+        # motion.wait(id2, 0)
 
     #tts.say("OK,Je stop.")
     #motion.rest()

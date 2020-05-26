@@ -20,7 +20,7 @@ def main(session):
     posture_service = session.service("ALRobotPosture")
 
     # Wake up robot
-#    motion_service.wakeUp()
+    motion_service.wakeUp()
 
     # Send robot to Stand Init
     posture_service.goToPosture("StandInit", 0.5)
@@ -30,7 +30,8 @@ def main(session):
     ###########################################################################
     # Add here an animation with timelines and moves (less than 60 seconds).  #
     # For example :
-    motion_service.moveTo(2.0, 2.0, 1.0 * math.pi)
+    # motion_service.moveTo(0.5, 0.5, 1.0 * math.pi)
+    motion_service.moveTo(2.0,0.0,0.0)
     ###########################################################################
     desiredRadius = 0.6
     displacementConstraint = 0.5

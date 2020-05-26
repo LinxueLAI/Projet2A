@@ -3,6 +3,8 @@ import sys
 import motion
 import time
 from naoqi import ALProxy
+
+##cette parti marche seulement pour Nao, marche pas pour pepper
 def StiffnessOn(proxy):
     #we use the 'body' to signify the collection of all joints
     pName="Body"
