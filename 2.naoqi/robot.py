@@ -650,7 +650,7 @@ class Pepper:
                     print("Face detected")
                     volunteer_found = True
 
-        self.say("I found a volunteer! It is you!")
+        self.say("Je trouvais un humain! salut!")
         self.stand()
         try:
             self.tracker_service.registerTarget("Face", 0.15)
@@ -663,6 +663,7 @@ class Pepper:
             time.sleep(2)
             self.unsubscribe_effector()
             self.stand()
+            print "test1"
             self.face_detection_service.unsubscribe(proxy_name)
 
     @staticmethod
@@ -742,14 +743,16 @@ class Pepper:
         called by default
         """
         self.autonomous_life_on()
-        emotions = ["neutral", "happy", "surprised", "angry", "sad"]
+        # emotions = ["neutral", "happy", "surprised", "angry", "sad"]
+        emotions = ["neutre", "heureux", "surpris", "en colere", "triste"]
+
         face_id = self.memory_service.getData("PeoplePerception/PeopleList")
         recognized = None
         try:
             recognized = self.face_characteristic.analyzeFaceCharacteristics(face_id[0])
         except Exception as error:
             print("[ERROR]: Cannot find a face to analyze.")
-            self.say("I cannot recognize a face.")
+            self.say("Je ne peux pas reconnaitre ce visage.")
 
         if recognized:
             properties = self.memory_service.getData("PeoplePerception/Person/" + str(face_id[0]) + "/ExpressionProperties")
@@ -759,26 +762,26 @@ class Pepper:
             # Gender properties
             if gender[1] > 0.4:
                 if gender[0] == 0:
-                    self.say("Hello lady!")
+                    self.say("Bonjour Mademoiselle!")
                 elif gender[0] == 1:
-                    self.say("Hello sir!")
+                    self.say("Bonjour Monsieur!")
             else:
-                self.say("Hello human being!")
+                self.say("Bonjour humain!")
 
             # Age properties
             if gender[1] == 1:
-                self.say("You are " + str(int(age[0])) + " years old.")
+                self.say("Vous avez " + str(int(age[0])) + "ans.")
             else:
-                self.say("You look like " + str(int(age[0])) + " oops, I mean " + str(int(age[0]-5)))
+                self.say("vous ressemblez a " + str(int(age[0])) + " oops, j'ai dit " + str(int(age[0]-5)))
 
             # Emotion properties
             emotion_index = (properties.index(max(properties)))
 
             if emotion_index > 0.5:
-                self.say("I am quite sure your mood is " + emotions[emotion_index])
+                self.say("Je suis sur que votre emotion est " + emotions[emotion_index])
             else:
-                self.say("I guess your mood is " + emotions[emotion_index])
-
+                self.say("Je suppose que votre emotion est " + emotions[emotion_index])
+    
     def listen_to(self, vocabulary):
         """
         Listen and match the vocabulary which is passed as parameter.

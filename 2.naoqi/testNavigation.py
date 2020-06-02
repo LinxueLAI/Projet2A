@@ -4,6 +4,7 @@ import numpy
 from PIL import Image
 import argparse
 import sys
+import matplotlib.pyplot as plt
 
 class Scan():
     def __init__(self): # __init__ is the first thing to run when the program is started
@@ -13,11 +14,15 @@ class Scan():
         self.motion = ALProxy("ALMotion", ip, 9559)
         self.posture = ALProxy("ALRobotPosture", ip, 9559)
         self.tracker = ALProxy("ALTracker", ip, 9559)
-        self.memory = ALProxy("ALMemory","172.16.0.77",9559)
+        self.memory = ALProxy("ALMemory",ip,9559)
         # self.perception = ALProxy("ALPeoplePerception", ip, 9559)
+        self.autonomous_life_service = ALProxy("ALAutonomousLife",ip,9559)
         self.navigation = ALProxy("ALNavigation",ip,9559)
         self.face_detection = ALProxy("ALFaceDetection",ip,9559)
-    
+        self.face_characteristic = ALProxy("ALFaceCharacteristics",ip,9559)
+        self.battery = ALProxy("ALBattery",ip,9559)
+        self.led_service = ALProxy("ALLeds",ip,9559)
+        
         #posture standinit gives a more natural position for the robot. instead of being looking to the sky it looks in the direction of the horizon
         self.posture.goToPosture("StandInit",0.5)
 
@@ -119,7 +124,7 @@ class Scan():
         print("[INFO]: Robot is in default position")  
 
     def stop_moving(self):
-        self.motion_service.stopMove()
+        self.motion.stopMove()
 
     def pick_a_human(self):
         volunteer_found = False
@@ -161,6 +166,76 @@ class Scan():
             self.stand()
             self.face_detection.unsubscribe(proxy_name)
 
+    def autonomous_life_on(self):
+        """Switch autonomous life on"""
+        self.autonomous_life_service.setState("interactive")
+        print("[INFO]: Autonomous life is on")
+
+    def get_face_properties(self):
+        self.autonomous_life_on()
+        # emotions = ["neutral", "happy", "surprised", "angry", "sad"]
+        emotions = ["neutre", "heureux", "surpris", "en colere", "triste"]
+        face_id = self.memory.getData("PeoplePerception/PeopleList")
+        recognized = None
+        try:
+            recognized = self.face_characteristic.analyzeFaceCharacteristics(face_id[0])
+        except Exception as error:
+            print("[ERROR]: Cannot find a face to analyze.")
+            self.say("Je ne peux pas reconnaitre ce visage.")
+
+        if recognized:
+            properties = self.memory.getData("PeoplePerception/Person/" + str(face_id[0]) + "/ExpressionProperties")
+            gender = self.memory.getData("PeoplePerception/Person/" + str(face_id[0]) + "/GenderProperties")
+            age = self.memory.getData("PeoplePerception/Person/" + str(face_id[0]) + "/AgeProperties")
+
+            # Gender properties
+            if gender[1] > 0.4:
+                if gender[0] == 0:
+                    self.say("Bonjour Mademoiselle!")
+                elif gender[0] == 1:
+                    self.say("Bonjour Monsieur!")
+            else:
+                self.say("Bonjour humain!")
+
+            # Age properties
+            if gender[1] == 1:
+                self.say("Vous avez " + str(int(age[0])) + "ans.")
+            else:
+                self.say("vous ressemblez a " + str(int(age[0])) + " non, j'ai dit " + str(int(age[0]-5)))
+
+            # Emotion properties
+            emotion_index = (properties.index(max(properties)))
+
+            if emotion_index > 0.5:
+                self.say("Je suis sur que votre emotion est " + emotions[emotion_index])
+            else:
+                self.say("Je suppose que votre emotion est " + emotions[emotion_index])
+    
+    def battery_status(self):
+        """Say a battery status"""
+        battery = self.battery.getBatteryCharge()
+        self.say("J'ai " + str(battery) + " pour cent de battery")
+    def shake_hand(self):
+        self.stand()
+        # Raise a hand to human
+        speed = 0.3
+        self.motion.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw", "RHand"], [0.8, 2.5, 1.0], speed)
+        # Wait to touch a hand
+        while True:
+            try:
+                status = self.memory.getData("HandRightBackTouched")
+                if status:
+                    self.motion.angleInterpolationWithSpeed("RHand", 0.0, speed*3)
+                    break
+            except KeyboardInterrupt:
+                break
+        # Get hand down
+        self.motion.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw", "RHand"], [3.5, 0.00, 0.0], 1.0)#1.0=speed max?
+        # Reset position
+        self.stand()
+    def blink_eyes(self, rgb):
+        self.led_service.fadeRGB('AllLeds', rgb[0], rgb[1], rgb[2], 1.0)
+
     def explore(self, radius, force=False):
         self.motion.wakeUp() #it is only used if the robot is in rest position.
         # Explore the environement
@@ -193,14 +268,14 @@ class Scan():
 
     def def_point_show(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
-        global a, b, c, d, e ,f, h
+        global a, b, c, d, e ,f, g, h
         
         self.navigation.stopLocalization()
         
         #two lists are created empty to later append the coordinates relative to X and Y of the coordinate system of the robot
         xlstpoints=[]
         ylstpoints=[]
-        
+        path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"#path
         #loads the map from the directory where it was saved during exploration
         self.navigation.loadExploration(str(path))
         self.navigation.startLocalization()
@@ -222,7 +297,7 @@ class Scan():
         time.sleep(2)
         
         #since the navigation method as a deprecated coordinate Z we are not able to use navigation to define the points themselfs. we use the ALMotion module instead that give us high precision of movement to retrieve the coordinates.
-        self.motion.moveTo(0.2,0.0,0.0) #20 centimeters in front
+        self.motion.moveTo(1.0,0.0,0.0) #20 centimeters in front
         self.b = self.navigation.getRobotPositionInMap()
         b=self.b
         
@@ -231,9 +306,9 @@ class Scan():
         by=self.b[0][1]
         ylstpoints.append(by)
         print "Saved position of B in map"
-        time.sleep(2)
+        time.sleep(1)
     
-        self.motion.moveTo(0.2,0.0,0.0)
+        self.motion.moveTo(1.0,0.0,0.0)
         self.c = self.navigation.getRobotPositionInMap()
         c=self.c
         
@@ -242,10 +317,10 @@ class Scan():
         cy=self.c[0][1]
         ylstpoints.append(cy)
         print "Saved position of C in map"
-        time.sleep(2)
+        time.sleep(1)
         
-        self.motion.moveTo(0.0,0.0,-3.1415)#rotation of 180 in radians the minus sine make the rotation movement clockwise
-        self.motion.moveTo(1.3,0.0,0.0)#after the rotation move 1.3m in front to save the position in the other direction
+        self.motion.moveTo(0.0,0.0,-3.1415926/2)#rotation of 180 in radians the minus sine make the rotation movement clockwise
+        self.motion.moveTo(1.0,0.0,0.0)#after the rotation move 1.3m in front to save the position in the other direction
         self.d = self.navigation.getRobotPositionInMap()
         d=self.d
         
@@ -254,9 +329,9 @@ class Scan():
         dy=self.d[0][1]
         ylstpoints.append(dy)
         print "Saved position of D in map"
-        time.sleep(2)
+        time.sleep(1)
         
-        self.motion.moveTo(0.2,0.0,0.0)
+        self.motion.moveTo(1.0,0.0,0.0)
         self.e = self.navigation.getRobotPositionInMap()
         e=self.e
         
@@ -265,9 +340,10 @@ class Scan():
         ey=self.e[0][1]
         ylstpoints.append(ey)
         print "Saved position of E in map"
-        time.sleep(2)
-      
-        self.motion.moveTo(0.2,0.0,0.0)
+        time.sleep(1)
+
+        self.motion.moveTo(0.0,0.0,-3.1415926/2)#rotation of 180 in radians the minus sine make the rotation movement clockwise
+        self.motion.moveTo(1.0,0.0,0.0)
         self.f = self.navigation.getRobotPositionInMap()
         f=self.f
         
@@ -276,9 +352,22 @@ class Scan():
         fy=self.f[0][1]
         ylstpoints.append(fy)
         print "Saved position of F in map"
-        time.sleep(2)
+        time.sleep(1)
+
+        self.motion.moveTo(1.0,0.0,0.0)
+        self.g = self.navigation.getRobotPositionInMap()
+        g=self.g
         
-        self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0])  #after the definition of all the points it is used the navigation method for pepper to reach the home position. the orientation on arrival is not under control
+        gx=self.g[0][0]
+        xlstpoints.append(gx)
+        gy=self.g[0][1]
+        ylstpoints.append(gy)
+        print "Saved position of G in map"
+        time.sleep(1)
+
+        self.motion.moveTo(0.0,0.0,-3.1415926/2)#rotation of 180 in radians the minus sine make the rotation movement clockwise
+        self.motion.moveTo(2.0,0.0,0.0)
+
         self.h = self.navigation.getRobotPositionInMap()
         h=self.h
         
@@ -295,11 +384,49 @@ class Scan():
         
         #plot the coordinates in a graphic that shows the path taken in relation to the coordinates of the robot
         plt.plot(xlstpoints, ylstpoints, 'r')
-        plt.axis([-2.0, 1.5, -0.8, 0.5])
+        plt.axis([-1.0, 2.5, -2.5, 0.5])
         plt.show()
         
         self.posture.goToPosture("StandInit",0.5)
-        return self.home, self.a, self.b, self.c, self.d, self.e, self.f 
+        return self.home, self.a, self.b, self.c, self.d, self.e, self.f,self.g 
+    
+    def steps_show(self):
+                
+        print "initiated behaviour"
+        time.sleep(5)
+        self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
+        #the steps followed to make the behaviour. first the robot goes to 3 defined points close to each other to make adjustments to the orientation
+        print "arrive at point a, say something:"
+        self.say("Bonjour, je m'appelle Pepper et je ferai quelques demonstrations.")
+        self.say("Je peux marcher.")
+        self.navigation.navigateToInMap([self.b[0][0],self.b[0][1],0.0])
+        self.navigation.navigateToInMap([self.c[0][0],self.c[0][1],0.0])
+        print "arrive at point c, say something:"
+        self.say("Je suis au point C maintenant, je danse.")
+        self.dance(self.motion)
+        time.sleep(1)
+
+        self.navigation.navigateToInMap([self.d[0][0],self.d[0][1],0.0])
+        self.navigation.navigateToInMap([self.e[0][0],self.e[0][1],0.0])
+        print "arrive at point e, say something:"
+        self.say("Je suis au point E maintenant.Je veux vous serrer la main.")
+        self.shake_hand()
+        time.sleep(1)
+        
+        self.navigation.navigateToInMap([self.f[0][0],self.f[0][1],0.0])
+        self.navigation.navigateToInMap([self.g[0][0],self.g[0][1],0.0])
+        print "arrive at point g, say something:"
+        self.say("Je suis au point G maintenant.Je change le couleur des yeux.")
+        self.blink_eyes([255, 0, 0])
+        time.sleep(1)
+
+        self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
+        print "arrive at point a, say something:"
+        self.say("Je suis retourne a l'endroit d'origine.")
+        self.pick_a_human()# pick a humain
+
+        self.say("Ma demonstration est terminee.")  
+        self.posture.goToPosture("StandInit",0.5)
 
     def def_point(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
@@ -365,7 +492,7 @@ class Scan():
     def def_point_carre(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
         self.navigation.stopLocalization()
-        
+        self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
         #loads the map from the directory where it was saved during exploration
         self.navigation.loadExploration(str(self.path))
         self.navigation.startLocalization()
@@ -404,46 +531,29 @@ class Scan():
         self.motion.moveTo(0.0,0.0,-3.1415926/2)
         self.motion.moveTo(2.0,0.0,0.0) 
         self.e = self.navigation.getRobotPositionInMap()
-        print "Saved position of D in map:"
+        print "Saved position of e in map:"
         print self.e
         time.sleep(2)
         
-        self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0]) #after the definition of all the points it is used the navigation method for pepper to reach the home position. the orientation on arrival is not under control
-        print "home:"
-        print self.home
+        # self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0]) #after the definition of all the points it is used the navigation method for pepper to reach the home position. the orientation on arrival is not under control
+        # print "home:"
+        # print self.home
         
         self.posture.goToPosture("StandInit",0.5)
-        return self.home, self.a, self.b, self.c, self.d, self.e
+        return self.a, self.b, self.c, self.d, self.e
     
-    def shake_hand(self):
-        self.stand()
-        # Raise a hand to human
-        self.motion.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw", "RHand"], [0.8, 2.5, 1.0], speed)
-        # Wait to touch a hand
-        while True:
-            try:
-                status = self.memory.getData("HandRightBackTouched")
-                if status:
-                    self.motion.angleInterpolationWithSpeed("RHand", 0.0, speed*3)
-                    break
-            except KeyboardInterrupt:
-                break
-        # Get hand down
-        self.motion.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw", "RHand"], [3.5, 0.00, 0.0], 1.0)#1.0=speed max?
-        # Reset position
-        self.stand()
 
     def steps_with_behaviors(self):
         self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
         print "arrive at point a, say something:"
         self.say("Bonjour, je m'appelle Pepper et je ferai quelques demonstrations.")
         self.say("Je peux marcher.")
-        
+        time.sleep(2)
         self.navigation.navigateToInMap([self.b[0][0],self.b[0][1],0.0])
         print "arrive at point b, say something:"
         self.say("Je suis au point B maintenant, je danse.")
-        self.dance()
-
+        self.dance(self.motion)
+        time.sleep(2)
         self.navigation.navigateToInMap([self.c[0][0],self.c[0][1],0.0])
         print "arrive at point c, say something:"
         self.say("Je suis au point C maintenant.Je veux vous serrer la main.")
@@ -451,8 +561,9 @@ class Scan():
 
         self.navigation.navigateToInMap([self.d[0][0],self.d[0][1],0.0])
         print "arrive at point d, say something:"
-        self.say("Je suis au point D maintenant.Je cligne des yeux.")
-
+        self.say("Je suis au point D maintenant.Je change le couleur des yeux.")
+        self.blink_eyes([255, 0, 0])
+        
         self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
         print "arrive at point e(a), say something:"
         self.say("Je suis retourne a l'endroit d'origine.")
@@ -487,6 +598,8 @@ class Scan():
         self.posture.goToPosture("StandInit",0.5)
 
     def steps2(self):
+        self.navigation.navigateToInMap([0.0,0.0,0.0])
+        print "arrive at home"
         self.navigation.navigateToInMap([0.0,2.0,0.0])
         print "arrive at a"
         self.navigation.navigateToInMap([2.0,2.0,0.0])
@@ -517,6 +630,7 @@ class Scan():
 
 # Test1:
 pepper = Scan()
+# pepper.battery_status()
 pepper.motion.setOrthogonalSecurityDistance(0.2)
 # pepper.motion_service.setOrthogonalSecurityDistance(0.1)
 print("OrthogonalSecurityDistance=")
@@ -524,15 +638,23 @@ print(pepper.motion.getOrthogonalSecurityDistance())#0.4
 print("TangentialSecurityDistance=")
 print(pepper.motion.getTangentialSecurityDistance())#0.1
 # After the exploration the robot will stop in a random position
-pepper.explore(10)#radius
-print "exploration is finished"
-print "wait for 10 sec"
-time.sleep(10)
-first=pepper.def_point_carre()
-print first # return self.home, self.a, self.b, self.c, self.d, self.e
-print "now the robot try to follow some steps:"
-# pepper.stepcarre()
-pepper.steps_with_behaviors()
+# pepper.explore(40)#radius
+# print "exploration is finished"
+pepper.motion.wakeUp()
+# print "wait for 10 sec"
+# time.sleep(10)
+# pepper.navigation.navigateToInMap([0.0,0.0,0.0])
+# pepper.navigation.navigateToInMap([0.5,0.0,0.0])
+# pepper.navigation.navigateToInMap([1.0,0.0,0.0])
+
+pepper.def_point_show()
+pepper.steps_show()
+# first=pepper.def_point_carre()
+# print first # return self.home, self.a, self.b, self.c, self.d, self.e
+# print "now the robot try to follow some steps:"
+# # pepper.stepcarre()
+# pepper.steps_with_behaviors()
+
 # 	-second def-point. Change the coordinates and the number of points that you see fit for your application. see if the path taken by the robot is satisfatory
 # second=pepper.def_point2()
 # print second

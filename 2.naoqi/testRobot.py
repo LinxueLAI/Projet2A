@@ -18,7 +18,7 @@ pepper = Pepper("192.168.2.169", 9559)
 # pepper.move_forward(0.5)
 
 # # Stop robot
-# pepper.stop_moving()
+pepper.stop_moving()
 
 # # Text to speech
 # pepper.say("Bonjour!")
@@ -69,7 +69,7 @@ pepper = Pepper("192.168.2.169", 9559)
 # pepper.set_security_distance(distance=0.05)
 
 # # Look down/Look up/Put head into default position in 'StandInit' pose
-pepper.move_head_up()
+# pepper.move_head_up()
 # pepper.move_head_down()
 # pepper.move_head_default()
 
