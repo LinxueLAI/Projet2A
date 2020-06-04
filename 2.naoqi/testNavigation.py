@@ -170,6 +170,17 @@ class Scan():
         """Switch autonomous life on"""
         self.autonomous_life_service.setState("interactive")
         print("[INFO]: Autonomous life is on")
+    
+    def autonomous_life_off(self):
+        """
+        Switch autonomous life off
+
+        .. note:: After switching off, robot stays in resting posture. After \
+        turning autonomous life default posture is invoked
+        """
+        self.autonomous_life_service.setState("disabled")
+        self.stand()
+        print("[INFO]: Autonomous life is off")
 
     def get_face_properties(self):
         self.autonomous_life_on()
@@ -269,9 +280,9 @@ class Scan():
     def def_point_show(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
         global a, b, c, d, e ,f, g, h
-        
         self.navigation.stopLocalization()
-        
+        xfourpts = [0.0,2.0,2.0,0.0,0.0]
+        yfourpts = [0.0,0.0,-2.0,-2.0,0.0]
         #two lists are created empty to later append the coordinates relative to X and Y of the coordinate system of the robot
         xlstpoints=[]
         ylstpoints=[]
@@ -383,8 +394,13 @@ class Scan():
         print (ylstpoints)
         
         #plot the coordinates in a graphic that shows the path taken in relation to the coordinates of the robot
-        plt.plot(xlstpoints, ylstpoints, 'r')
+        plt.title('Result Analysis')
+        plt.plot(xfourpts, yfourpts, 'g',label ="theoretical path")
+        plt.plot(xlstpoints, ylstpoints, 'r',label ="actual path")
+        plt.legend() 
         plt.axis([-1.0, 2.5, -2.5, 0.5])
+        plt.xlabel('x (m)')
+        plt.ylabel('y (m)')
         plt.show()
         
         self.posture.goToPosture("StandInit",0.5)
@@ -421,6 +437,7 @@ class Scan():
         time.sleep(1)
 
         self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
+        self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
         print "arrive at point a, say something:"
         self.say("Je suis retourne a l'endroit d'origine.")
         self.pick_a_human()# pick a humain
@@ -638,9 +655,10 @@ print(pepper.motion.getOrthogonalSecurityDistance())#0.4
 print("TangentialSecurityDistance=")
 print(pepper.motion.getTangentialSecurityDistance())#0.1
 # After the exploration the robot will stop in a random position
-# pepper.explore(40)#radius
+# pepper.autonomous_life_off()
+# pepper.explore(3)#radius
 # print "exploration is finished"
-pepper.motion.wakeUp()
+# pepper.motion.wakeUp()
 # print "wait for 10 sec"
 # time.sleep(10)
 # pepper.navigation.navigateToInMap([0.0,0.0,0.0])
