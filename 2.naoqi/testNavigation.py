@@ -265,7 +265,7 @@ class Scan():
         print "now the robot: it begins to go to initial position "
         self.navigation.navigateToInMap([0., 0., 0.])
         # Stop localization
-        print "now the robot: ie has arrived the initial position "
+        print "now the robot: it has arrived the initial position "
         self.navigation.stopLocalization()
         # Retrieve and display the map built by the robot
         result_map = self.navigation.getMetricalMap()
@@ -388,9 +388,9 @@ class Scan():
         ylstpoints.append(hy)
         print "home \n" 
         
-        print "lista de pontos x"
+        print "liste de photos x"
         print (xlstpoints)
-        print "lista de pontos y"
+        print "liste de photos y"
         print (ylstpoints)
         
         #plot the coordinates in a graphic that shows the path taken in relation to the coordinates of the robot
@@ -437,7 +437,8 @@ class Scan():
         time.sleep(1)
 
         self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
-        self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
+        time.sleep(1)
+        # self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
         print "arrive at point a, say something:"
         self.say("Je suis retourne a l'endroit d'origine.")
         self.pick_a_human()# pick a humain
@@ -466,7 +467,7 @@ class Scan():
         time.sleep(2)
 
         #since the navigation method as a coordinate Z deprecated we are not able to use navigation to define the points themselfs. we use the ALMotion module instead that give us high precision of movement to retrieve the coordinates.
-        self.motion.moveTo(0.4,0.0,0.0) #20 centimeters in front
+        self.motion.moveTo(0.4,0.0,0.0) #40 centimeters in front
         # self.motion.moveTo(1.0,0.0,0.0)
         self.b = self.navigation.getRobotPositionInMap()
         print "Saved position of B in map:"
@@ -656,11 +657,11 @@ print("TangentialSecurityDistance=")
 print(pepper.motion.getTangentialSecurityDistance())#0.1
 # After the exploration the robot will stop in a random position
 # pepper.autonomous_life_off()
-# pepper.explore(3)#radius
-# print "exploration is finished"
+pepper.explore(10.0)#radius
+print "exploration is finished"
 # pepper.motion.wakeUp()
-# print "wait for 10 sec"
-# time.sleep(10)
+print "wait for 10 sec"
+time.sleep(10)
 # pepper.navigation.navigateToInMap([0.0,0.0,0.0])
 # pepper.navigation.navigateToInMap([0.5,0.0,0.0])
 # pepper.navigation.navigateToInMap([1.0,0.0,0.0])

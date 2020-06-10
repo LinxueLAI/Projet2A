@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # -*- encoding: UTF-8 -*-
+"""Avoid obstacles by using algorithm braitenberg"""
 from naoqi import ALProxy
 import argparse
 import almath

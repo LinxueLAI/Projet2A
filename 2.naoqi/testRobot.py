@@ -18,7 +18,7 @@ pepper = Pepper("192.168.2.169", 9559)
 # pepper.move_forward(0.5)
 
 # # Stop robot
-pepper.stop_moving()
+# pepper.stop_moving()
 
 # # Text to speech
 # pepper.say("Bonjour!")
@@ -30,7 +30,7 @@ pepper.stop_moving()
 # pepper.shutdown_robot()
 
 # # Switch autonomous life off
-# pepper.autonomous_life_off()
+pepper.autonomous_life_off()
 
 # # Switch autonomous life on
 # pepper.autonomous_life_on()
