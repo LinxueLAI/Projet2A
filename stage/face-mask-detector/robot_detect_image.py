@@ -9,11 +9,12 @@ import numpy as np
 import argparse
 import cv2
 import os
-def detect_image():
+
+def detect_image(label):
 	# construct the argument parser and parse the arguments
 	ap = argparse.ArgumentParser()
 	ap.add_argument("-i", "--image", type=str,
-		default="./tmp/face5.png",
+		default="./tmp/Output.png",
 		help="path to input image")
 	ap.add_argument("-f", "--face", type=str,
 		default="face_detector",

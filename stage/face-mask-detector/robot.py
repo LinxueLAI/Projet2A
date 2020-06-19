@@ -240,7 +240,8 @@ class Pepper:
         :param effector_name: `LArm`, `RArm`, `Arms`
         :param diameter: Diameter of the object (default 0.05, for face default 0.15)
         """
-        if object == "Face":
+	        
+	if object == "Face":
             self.tracker_service.registerTarget(object_name, 0.15)
         else:
             self.tracker_service.registerTarget(object_name, diameter)
@@ -672,7 +673,7 @@ class Pepper:
 	self.subscribe_camera("camera_top", 2, 30)
         #self.stand()
         self.posture_service.goToPosture("Stand", 0.5)
-        self.say("Je cherche un humain.")
+        self.say("Je detecte un visage.")
         proxy_name = "FaceDetection" + str(numpy.random)
 
         print("[INFO]:looking for a face.")
@@ -713,12 +714,12 @@ class Pepper:
                     face_found = True
 		    #show = True
 	    	    image = self.get_camera_frame(show)#true?
-
 	    	    cv2.imshow("frame", image)
 		    #image_raw = self.camera_device.getImageRemote(self.camera_link)
 		    #image = numpy.frombuffer(image_raw[6], numpy.uint8).reshape(image_raw[1], image_raw[0], 3)
 		    #image = cv2.resize(image, (800, 600))
 		    cv2.imwrite("./tmp/face5.png", image)
+		    break
 		    print("face5.png is saved.")
 
         #self.say("Je trouvais un humain! salut!")
@@ -735,6 +736,81 @@ class Pepper:
 	text="C'est bien, vous avez porter le masque." if label=="Mask" else "Portez le masque si vous plait."
 	self.say(text)
         self.stand()
+
+    def trackFace(self):
+        face_found = False
+        self.unsubscribe_effector()
+	self.subscribe_camera("camera_top", 2, 30)
+        self.posture_service.goToPosture("Stand", 0.5)
+        self.say("Je detecte un visage.")
+        proxy_name = "FaceDetection" + str(numpy.random)
+
+        print("[INFO]:looking for a face.")
+	flow = True
+	show = False
+        while not face_found and flow==True:
+	    if cv2.waitKey(1) & 0xFF == ord('q'):
+		break
+
+            self.face_detection_service.subscribe(proxy_name, 500, 0.0)
+            for memory in range(5):
+                time.sleep(0.5)
+                output = self.memory_service.getData("FaceDetected")
+                print("...")
+                if output and isinstance(output, list) and len(output) >= 2:
+                    print("Face detected")
+		    print("timestamp=")
+		    print(output[0])
+		    print("faceinfoArray=")
+		    print(output[1])
+                    #print("FaceShapInfo=")
+		    faceInfoArray=output[1]
+		    for j in range( len(faceInfoArray)-1 ):
+                	faceInfo = faceInfoArray[j]
+                	# First Field = Shape info.
+                	faceShapeInfo = faceInfo[0]
+                	# Second Field = Extra info (empty for now).
+                	faceExtraInfo = faceInfo[1]
+                	print "Face Infos :  alpha %.3f - beta %.3f" % (faceShapeInfo[1], faceShapeInfo[2])
+                	print "Face Infos :  width %.3f - height %.3f" % (faceShapeInfo[3], faceShapeInfo[4])
+                	print "Face Extra Infos :" + str(faceExtraInfo)
+			self.say("Salut,"+faceExtraInfo[2])
+                    face_found = True
+	    	    image = self.get_camera_frame(show)#true?
+	    	    cv2.imshow("frame", image)
+		    cv2.imwrite("./tmp/Output.png", image)
+		    break
+		    print("Output.png is saved.")
+
+        self.tracker_service.registerTarget("Face", 0.15)
+        self.tracker_service.setMode("Move")
+        self.tracker_service.track("Face")
+	self.say("Veuillez attendre si vous plait.")
+	label=""
+	#label = detect_image()
+	#print "label="+str(label)
+	boucle = 1
+	while not detect_image(label)=="Mask":
+		print "boucle="+str(boucle)
+		text="Portez le masque si vous plait."
+		if boucle == 1:		
+			self.say(text)
+		#time.sleep(2)
+		image = self.get_camera_frame(show)#true?
+      	        cv2.imshow("frame", image)
+		cv2.imwrite("./tmp/Output.png", image)
+		#self.say("Veuillez attendre si vous plait.")
+		#label = detect_image()
+		boucle=boucle+1
+
+	self.say("C'est bien, vous avez porter le masque.")
+	self.unsubscribe_effector()
+        self.stand()
+       	self.face_detection_service.unsubscribe(proxy_name)	
+	self.unsubscribe_camera()
+	cv2.destroyAllWindows()
+
+
 
     @staticmethod
     def share_localhost(folder):

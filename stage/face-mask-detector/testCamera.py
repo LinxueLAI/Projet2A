@@ -5,20 +5,15 @@ import argparse
 import sys
 import time
 pepper = Pepper("192.168.2.169", 9559)
-
+#pepper.track_object("Face","LArm",0.15)
+#pepper.autonomous_life_off()
 # Test camera ## marche bien (dynamique)
-#pepper.subscribe_camera("camera_top", 2, 30)
-#while True:
-  #  image = pepper.get_camera_frame(show=False)#true?
-  #  cv2.imshow("frame", image)
-   # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #break
-#test searchface
+pepper.subscribe_camera("camera_top", 2, 30)
 while True:
-
-	pepper.searchFace()
-	if cv2.waitKey(1) & 0xFF == ord('q'):
-		break
+    image = pepper.get_camera_frame(show=False)#true?
+    cv2.imshow("frame", image)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 #pepper.unsubscribe_camera()
 #cv2.destroyAllWindows()
