@@ -2,8 +2,9 @@ from robotDetector import *
 
 pepper = Pepper("192.168.2.169", 9559)
 
-pepper.subscribe_camera("camera_top", 2, 30)
 
+pepper.subscribe_camera("camera_top", 2, 30)
+#pepper.autonomous_life_off()
 # load our serialized face detector model from disk
 print("[INFO] loading face detector model...")
 prototxtPath = os.path.sep.join(["face_detector", "deploy.prototxt"])
@@ -20,10 +21,12 @@ print("[INFO] starting video stream...")
 
 # loop over the frames from the video stream
 while True:
+	pepper.tracker_service.registerTarget("Face", 0.15)
+        pepper.tracker_service.setMode("Move")
+        pepper.tracker_service.track("Face")
 	frame = pepper.get_camera_frame(show=False)
 
-	# detect faces in the frame and determine if they are wearing a
-	# face mask or not
+	# detect faces in the frame and determine if they are wearing a face mask or not
 	(locs, preds) = pepper.detect_and_predict_mask(frame, faceNet, maskNet)
 
 	# loop over the detected face locations and their corresponding
@@ -37,29 +40,26 @@ while True:
 		# the bounding box and text
 		label = "Mask" if mask > withoutMask else "No Mask"
 		color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
-		if label=="No Mask":
-			#pepper.tracker_service.registerTarget("Face", 0.15)
-			#pepper.tracker_service.setMode("Move")
-			#pepper.tracker_service.track("Face")
-			pepper.say("Portez le masque si vous plait.")
-			time.sleep(4)
-			break
-		elif label=="Mask":
-			pepper.say("C'est bien, vous avez porter le masque.")
-			time.sleep(4)
-			break
+		
 		# include the probability in the label
-		label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
+		label1 = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
 
 		# display the label and bounding box rectangle on the output
 		# frame
-		cv2.putText(frame, label, (startX, startY - 10),
+		cv2.putText(frame, label1, (startX, startY - 10),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
 		cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 
 	# show the output frame
 	cv2.imshow("Frame", frame)
-
+	cv2.imwrite("./tmp/"+label+".png", frame)
+	if label=="No Mask":
+		pepper.say("Portez le masque si vous plait.")
+		time.sleep(2)
+	elif label=="Mask":
+		pepper.say("C'est bien, vous avez porter le masque.")
+		time.sleep(2)
+	label=""
 	key = cv2.waitKey(1) & 0xFF
 
 	# if the `q` key was pressed, break from the loop
