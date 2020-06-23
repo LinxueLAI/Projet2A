@@ -1,4 +1,5 @@
 from robotDetector import *
+from PIL import Image
 from threading import Thread
 class Fios(Thread):
     def __init__(self,val):
@@ -103,11 +104,48 @@ class Fios(Thread):
 		if key == ord("q"):
 			break
 
+    def def_point_show(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
+        #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
+        global a, b, c, d, e ,f, g, h
+        self.pepper.navigation_service.stopLocalization()
+        xfourpts = [0.0,2.0,2.0,0.0,0.0]
+        yfourpts = [0.0,0.0,-2.0,-2.0,0.0]
+        #two lists are created empty to later append the coordinates relative to X and Y of the coordinate system of the robot
+        xlstpoints=[]
+        ylstpoints=[]
+        path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"#path
+        #loads the map from the directory where it was saved during exploration
+        self.pepper.navigation_service.loadExploration(str(path))
+	guess =[0.,0.]
+        self.pepper.navigation_service.relocalizeInMap(guess)
+        self.pepper.navigation_service.startLocalization()
+        
+        #the map made by the robot has associated a coordinate system relative to the robot. the place where the robot starts the movement is the [0.0,0.0,0.0]. we define this position as our home
+        self.home = self.pepper.navigation_service.getRobotPositionInMap()
+        print "saved home position"
+        
+	#self.pepper.say("Je peux marcher.")
+        #self.pepper.motion_service.moveTo(3.0,0.0,0.0)
+        self.pepper.navigation_service.navigateToInMap([3.,0.,0.])
+        self.a = self.pepper.navigation_service.getRobotPositionInMap() #a is defined in the same position as home. the reason for this is to follow a logic when it is called in the steps.
+        a=self.a 
+        print "point a ="+str(a)
+        
+        result_map = self.pepper.navigation_service.getMetricalMap()
+        map_width = result_map[1]
+        map_height = result_map[2]
+        img = np.array(result_map[4]).reshape(map_width, map_height)
+        img = (100 - img) * 2.55 # from 0..100 to 255..0
+        img = np.array(img, np.uint8)
+        Image.frombuffer('L',  (map_width, map_height), img, 'raw', 'L', 0, 1).show()
+
     def run(self):
 	if self.val == 1:
-		self.videoStream()
-	if self.val == 2:
-		self.parole()
+		#self.videoStream()
+		self.def_point_show()
+		#self.steps_show()
+	#if self.val == 2:
+		#self.parole()
 
 myThread1 = Fios(1)
 myThread1.setName('Thread 1')

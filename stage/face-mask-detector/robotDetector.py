@@ -41,6 +41,10 @@ class Pepper:
         self.localization = None
         self.camera_link = None
 	self.image = None
+        stiffnesses  = 1.0
+        names ="Body"
+        self.motion_service.setStiffnesses(names, stiffnesses)
+	self.motion_service.setOrthogonalSecurityDistance(0.2)
         print("[INFO]: Robot is initialized at " + ip_address + ":" + str(port))
 
     def unsubscribe_effector(self):
@@ -160,6 +164,10 @@ class Pepper:
         self.autonomous_life_service.setState("disabled")
         self.stand()
         print("[INFO]: Autonomous life is off")
+
+    def autonomous_life_on(self):
+        self.autonomous_life_service.setState("interactive")
+        print("[INFO]: Autonomous life is on")
 
     def detect_image(self,image):
 	# load our serialized face detector model from disk
