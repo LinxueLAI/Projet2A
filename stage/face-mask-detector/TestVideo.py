@@ -4,7 +4,7 @@ pepper = Pepper("192.168.2.169", 9559)
 
 
 pepper.subscribe_camera("camera_top", 2, 30)
-#pepper.autonomous_life_off()
+pepper.autonomous_life_off()
 #pepper.autonomous_life_on()
 #pepper.stand()
 # load our serialized face detector model from disk

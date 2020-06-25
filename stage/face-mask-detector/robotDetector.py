@@ -44,8 +44,38 @@ class Pepper:
         stiffnesses  = 1.0
         names ="Body"
         self.motion_service.setStiffnesses(names, stiffnesses)
-	self.motion_service.setOrthogonalSecurityDistance(0.2)
+	self.motion_service.setOrthogonalSecurityDistance(0.05)
         print("[INFO]: Robot is initialized at " + ip_address + ":" + str(port))
+
+    def explore(self, radius, force=False):
+        self.motion_service.wakeUp() #it is only used if the robot is in rest position.
+        # Explore the environement
+        # radius = 3.0
+        error = self.navigation_service.explore(radius)
+        if error != 0:
+            print "Exploration failed."
+            return
+        # Saves the exploration on the robots disk
+        self.path = self.navigation_service.saveExploration()
+        print "Exploration saved at path: \"" + self.path + "\""
+        # Start localization to navigate in map
+        print "now the robot: startLocalisation "
+        self.navigation_service.startLocalization()
+        # Come back to initial position
+        print "now the robot: it begins to go to initial position "
+        self.navigation_service.navigateToInMap([0., 0., 0.])
+        # Stop localization
+        print "now the robot: it has arrived the initial position "
+        self.navigation_service.stopLocalization()
+        # Retrieve and display the map built by the robot
+        result_map = self.navigation_service.getMetricalMap()
+        map_width = result_map[1]
+        map_height = result_map[2]
+        img = np.array(result_map[4]).reshape(map_width, map_height)
+        img = (100 - img) * 2.55 # from 0..100 to 255..0
+        img = np.array(img, np.uint8)
+        Image.frombuffer('L',  (map_width, map_height), img, 'raw', 'L', 0, 1).show()
+        self.posture_service.goToPosture("StandInit",0.5)
 
     def unsubscribe_effector(self):
         """
