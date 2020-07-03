@@ -197,21 +197,37 @@ class Fios(Thread):
 	self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
 	print "arrive at home"
 	self.pepper.say("C'est fini")	
+	result_map = self.pepper.navigation_service.getMetricalMap()
+	print"resolution="+str(result_map[0])
+        map_width = result_map[1]
+        map_height = result_map[2]
+        img = np.array(result_map[4]).reshape(map_width, map_height)
+        img = (100 - img) * 2.55 # from 0..100 to 255..0
+        img = np.array(img, np.uint8)
+        Image.frombuffer('L',  (map_width, map_height), img, 'raw', 'L', 0, 1).show()
+    
+    def def_pointSuivant(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
+        #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
+        self.pepper.navigation_service.stopLocalization()
+	#self.path="/home/nao/.local/share/Explorer/2015-07-20T170449.116Z.explo"
+	self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
+        #loads the map from the directory where it was saved during exploration
+        self.pepper.navigation_service.loadExploration(str(self.path))
+        self.pepper.navigation_service.startLocalization()
+
 	#result_map = self.pepper.navigation_service.getMetricalMap()
+	#print "resolution="+str(result_map[0])
+	#print "width ="+str(result_map[1])
+	#print "height ="+str(result_map[2])
+	#print "originOffsetXY ="+str(result_map[3])
+	#print "pxlValue = "+str(type(result_map[4]))+",length= "+str(np.shape(result_map[4]))
         #map_width = result_map[1]
         #map_height = result_map[2]
         #img = np.array(result_map[4]).reshape(map_width, map_height)
         #img = (100 - img) * 2.55 # from 0..100 to 255..0
         #img = np.array(img, np.uint8)
+	#print str(img)
         #Image.frombuffer('L',  (map_width, map_height), img, 'raw', 'L', 0, 1).show()
-    
-    def def_pointSuivant(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
-        #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
-        self.pepper.navigation_service.stopLocalization()
-        self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
-        #loads the map from the directory where it was saved during exploration
-        self.pepper.navigation_service.loadExploration(str(self.path))
-        self.pepper.navigation_service.startLocalization()
 
         #the map made by the robot has associated a coordinate system relative to the robot. the place where the robot starts the movement is the [0.0,0.0,0.0]. we define this position as our home
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
@@ -264,17 +280,70 @@ class Fios(Thread):
         #then the robot starts moving autonomously to the target
         print "go to point a : "+str(self.a[0][0])+","+str(self.a[0][1])
         self.pepper.navigation_service.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
+	print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point b : "+str(self.b[0][0])+","+str(self.b[0][1])
         self.pepper.navigation_service.navigateToInMap([self.b[0][0],self.b[0][1],0.0])
+	print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point c : "+str(self.c[0][0])+","+str(self.c[0][1])
         self.pepper.navigation_service.navigateToInMap([self.c[0][0],self.c[0][1],0.0])
+	print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point d : "+str(self.d[0][0])+","+str(self.d[0][1])
         self.pepper.navigation_service.navigateToInMap([self.d[0][0],self.d[0][1],0.0])
+	print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point e : "+str(self.e[0][0])+","+str(self.e[0][1])
         self.pepper.navigation_service.navigateToInMap([self.e[0][0],self.e[0][1],0.0])
+	print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         
         #the robot then returns home to rest
         self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
+	print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        self.pepper.posture_service.goToPosture("StandInit",0.5)
+
+    def navigateToPoint(self):
+        self.pepper.navigation_service.stopLocalization()
+	self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
+        self.pepper.navigation_service.loadExploration(str(self.path))
+
+        self.pepper.navigation_service.startLocalization()
+
+        time.sleep(5)
+
+        self.home = self.pepper.navigation_service.getRobotPositionInMap()
+        print "saved home position:"+str(self.home[0])
+
+        print "go to point a : "+str(0)+","+str(0)
+        self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
+	print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        print "go to point b : "+str(3)+","+str(0)
+        self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
+	print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        print "go to point c : "+str(5)+","+str(0)
+        self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
+	print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        print "go to point d : "+str(2)+","+str(0)
+        self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
+	print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        print "go to point e : "+str(0)+","+str(0)
+        self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
+	print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
+        print "go to point b1 : "+str(-2)+","+str(-3)
+        self.pepper.navigation_service.navigateToInMap([-2.,-3.,0.0])
+	print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        #print "go to point c1 : "+str(0)+","+str(5)
+        #self.pepper.navigation_service.navigateToInMap([0.,5.,0.0])
+	#print "reached c1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        print "go to point d1 : "+str(-1)+","+str(-2)
+        self.pepper.navigation_service.navigateToInMap([-1.,-2.,0.0])
+	print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        print "go to point e1 : "+str(0)+","+str(0)
+        self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
+	print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        
+        #the robot then returns home to rest
+        print "go to home : "+str(self.home[0][0])+","+str(self.home[0][1])
+        self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
+	print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         self.pepper.posture_service.goToPosture("StandInit",0.5)
 
     def run(self):
@@ -282,13 +351,15 @@ class Fios(Thread):
 		key = ""
 		#self.pepper.autonomous_life_off()
 		#self.pepper.motion_service.wakeUp()
-		self.def_pointSuivant()
-		while True:
-			if key == ord("q"):
-				break
-			self.steps()
+		#self.def_pointSuivant()
+		#self.pepper.explore(4.0)
+		#while True:
+		#	if key == ord("q"):
+		#		break
+		#self.navigateToPoint()		
+		#self.steps()
 		self.videoStream()
-		#self.pepper.explore(5.0)
+
 		#self.def_point_show()
 		#self.steps_show()
 	if self.val == 2:

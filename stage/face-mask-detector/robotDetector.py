@@ -15,6 +15,7 @@ import playsound
 import subprocess
 import socket
 import imutils
+from PIL import Image
 
 class Pepper:
     def __init__(self, ip_address, port=9559):
@@ -69,6 +70,7 @@ class Pepper:
         self.navigation_service.stopLocalization()
         # Retrieve and display the map built by the robot
         result_map = self.navigation_service.getMetricalMap()
+	print"resolution="+str(result_map[0])
         map_width = result_map[1]
         map_height = result_map[2]
         img = np.array(result_map[4]).reshape(map_width, map_height)
