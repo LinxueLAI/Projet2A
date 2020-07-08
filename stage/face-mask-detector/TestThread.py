@@ -89,10 +89,9 @@ class Fios(Thread):
 			cv2.putText(frame, label1, (startX, startY - 10),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
 			cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
-
-		if self.label=="No Mask":
 			m = random.randint(0,9)
 			n = random.randint(0,100)
+		if self.label=="No Mask":
 			if m < 2:
 				self.pepper.say("Portez le masque si vous plait.")
 			elif m < 4:
@@ -109,7 +108,7 @@ class Fios(Thread):
 		elif self.label=="Mask":
 			self.pepper.say("C'est bien, vous avez porter le masque.")
 			print "image output"
-			cv2.imwrite("./tmp/"+self.label+".png", frame)		
+			cv2.imwrite("./tmp/"+self.label+str(n)+".png", frame)		
 			time.sleep(2)
 		self.label=""
 		key = ""
@@ -254,6 +253,7 @@ class Fios(Thread):
         time.sleep(5)
 
         self.pepper.motion_service.moveTo(0.0,0.0,-3.1415926)
+        self.pepper.posture_service.goToPosture("StandInit",0.5)
         self.pepper.motion_service.moveTo(3.0,0.0,0.0) 
         self.d = self.pepper.navigation_service.getRobotPositionInMap()
         print "Saved position of D in map:"
@@ -267,9 +267,9 @@ class Fios(Thread):
         print self.e
         time.sleep(2)
         
-        # self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0]) #after the definition of all the points it is used the navigation method for pepper to reach the home position. the orientation on arrival is not under control
-        # print "home:"
-        # print self.home
+        self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0]) #after the definition of all the points it is used the navigation method for pepper to reach the home position. the orientation on arrival is not under control
+        print "home:"
+        print self.home
         
         self.pepper.posture_service.goToPosture("StandInit",0.5)
         return self.a, self.b, self.c, self.d, self.e
@@ -320,26 +320,26 @@ class Fios(Thread):
         print "go to point c : "+str(5)+","+str(0)
         self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
 	print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
+
+        print "go to point b1 : "+str(5)+","+str(-1)
+        self.pepper.navigation_service.navigateToInMap([5.,-1.,0.0])
+	print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        #print "go to point c1 : "+str(0)+","+str(5)
+        #self.pepper.navigation_service.navigateToInMap([0.,5.,0.0])
+	#print "reached c1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        print "go to point d1 : "+str(5)+","+str(-2)
+        self.pepper.navigation_service.navigateToInMap([5.,-2.,0.0])
+	print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+        print "go to point e1 : "+str(5)+","+str(0)
+        self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
+	print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point d : "+str(2)+","+str(0)
         self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
 	print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point e : "+str(0)+","+str(0)
         self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
 	print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-        print "go to point b1 : "+str(-2)+","+str(-3)
-        self.pepper.navigation_service.navigateToInMap([-2.,-3.,0.0])
-	print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        #print "go to point c1 : "+str(0)+","+str(5)
-        #self.pepper.navigation_service.navigateToInMap([0.,5.,0.0])
-	#print "reached c1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        print "go to point d1 : "+str(-1)+","+str(-2)
-        self.pepper.navigation_service.navigateToInMap([-1.,-2.,0.0])
-	print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        print "go to point e1 : "+str(0)+","+str(0)
-        self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-	print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        
         #the robot then returns home to rest
         print "go to home : "+str(self.home[0][0])+","+str(self.home[0][1])
         self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
@@ -356,9 +356,9 @@ class Fios(Thread):
 		#while True:
 		#	if key == ord("q"):
 		#		break
-		#self.navigateToPoint()		
+		self.navigateToPoint()		
 		#self.steps()
-		self.videoStream()
+		#self.videoStream()
 
 		#self.def_point_show()
 		#self.steps_show()
