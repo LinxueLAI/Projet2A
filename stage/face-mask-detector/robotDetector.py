@@ -502,6 +502,82 @@ class Pepper:
         self.tts_service.say(text)
         print("[INFO]: Robot says: " + text)
 
+    def listen_to(self, vocabulary):
+        """
+        Listen and match the vocabulary which is passed as parameter.
+
+        :Example:
+
+        >>> words = pepper.listen_to(["what color is the sky", "yes", "no"]
+
+        :param vocabulary: List of phrases or words to recognize
+        :type vocabulary: string
+        :return: Recognized phrase or words
+        :rtype: string
+        """
+        self.speech_service.setLanguage("French")#English
+        self.speech_service.pause(True)
+        try:
+            self.speech_service.setVocabulary(vocabulary, True)
+        except RuntimeError as error:
+            print(error)
+            self.speech_service.removeAllContext()
+            self.speech_service.setVocabulary(vocabulary, True)
+            self.speech_service.subscribe("Test_ASR")
+        try:
+            print("[INFO]: Robot is listening to you...")
+            self.speech_service.pause(False)
+            time.sleep(4)
+            words = self.memory_service.getData("WordRecognized")
+            print("[INFO]: Robot understood: '" + words[0] + "'")
+            return words[0]
+        except:
+            pass
+
+    def listen(self):
+        """
+        Wildcard speech recognition via internal Pepper engine
+
+        .. warning:: To get this proper working it is needed to disable or uninstall \
+        all application which can modify a vocabulary in a Pepper.
+
+        .. note:: Note this version only rely on time but not its internal speak processing \
+        this means that Pepper will 'bip' at the begining and the end of human speak \
+        but it is not taken a sound in between the beeps. Search for 'Robot is listening to \
+        you ... sentence in log console
+
+        :Example:
+
+        >>> words = pepper.listen()
+
+        :return: Speech to text
+        :rtype: string
+        """
+        self.speech_service.setAudioExpression(False)
+        self.speech_service.setVisualExpression(False)
+        self.audio_recorder.stopMicrophonesRecording()
+        print("[INFO]: Speech recognition is in progress. Say something.")
+        while True:
+            print(self.memory_service.getData("ALSpeechRecognition/Status"))
+            if self.memory_service.getData("ALSpeechRecognition/Status") == "SpeechDetected":
+                self.audio_recorder.startMicrophonesRecording("/home/nao/speech.wav", "wav", 48000, (0, 0, 1, 0))
+                print("[INFO]: Robot is listening to you")
+                self.blink_eyes([255, 255, 0])
+                break
+
+        while True:
+            if self.memory_service.getData("ALSpeechRecognition/Status") == "EndOfProcess":
+                self.audio_recorder.stopMicrophonesRecording()
+                print("[INFO]: Robot is not listening to you")
+                self.blink_eyes([0, 0, 0])
+                break
+
+        self.download_file("speech.wav")
+        self.speech_service.setAudioExpression(True)
+        self.speech_service.setVisualExpression(True)
+
+        return self.speech_to_text("speech.wav")
+
     def get_camera_frame(self, show):
         image_raw = self.camera_device.getImageRemote(self.camera_link)
         image = np.frombuffer(image_raw[6], np.uint8).reshape(image_raw[1], image_raw[0], 3)

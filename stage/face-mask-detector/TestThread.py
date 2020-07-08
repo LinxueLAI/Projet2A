@@ -100,9 +100,6 @@ class Fios(Thread):
 			n = random.randint(0,100)
 		if self.label=="No Mask":
 			self.pepper.blink_eyes([255, 0, 0])
-			self.pepper.blink_eyes([0, 255, 0])
-			self.pepper.blink_eyes([255, 0, 0])
-			self.pepper.blink_eyes([0, 255, 0])
 			nbHuman = nbHuman+1
 			if m < 2:
 				self.pepper.say("Portez votre masque si vous plait.")
@@ -119,6 +116,7 @@ class Fios(Thread):
 			print"I've met "+str(nbHuman)+" peoples,there're "+str(nbMasque)+" masks"
 			time.sleep(2)
 		elif self.label=="Mask":
+			self.pepper.blink_eyes([0, 255, 0])
 			nbHuman = nbHuman+1
 			nbMasque = nbMasque+1
 			self.pepper.say("C'est bien, vous portez votre masque.")
@@ -126,6 +124,7 @@ class Fios(Thread):
 			cv2.imwrite("./tmp/"+self.label+str(n)+".png", frame)
 			print"I've met "+str(nbHuman)+" peoples,there're "+str(nbMasque)+" masks"		
 			time.sleep(2)
+		self.pepper.blink_eyes([0, 0, 255])
 		self.label=""
 		key = ""
 			
@@ -327,7 +326,7 @@ class Fios(Thread):
 
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
         print "saved home position:"+str(self.home[0])
-	tours = 1
+	tours = 4
 	while tours > 0:
 		print "go to point a : "+str(0)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
@@ -373,17 +372,17 @@ class Fios(Thread):
 	if self.val == 1:
 		key = ""
 		#self.pepper.autonomous_life_off()
-		#self.pepper.motion_service.wakeUp()
+		self.pepper.motion_service.wakeUp()
 		#self.def_pointSuivant()
 		#self.pepper.explore(4.0)
 		#while True:
 		#	if key == ord("q"):
 		#		break
-		self.pepper.posture_service.goToPosture("StandInit",0.5)				
+		#self.pepper.posture_service.goToPosture("StandInit",0.5)				
 		#self.pepper.remoteTerminal()
 		#self.navigateToPoint()		
 		#self.steps()
-		#self.videoStream()
+		self.videoStream()
 		#self.def_point_show()
 		#self.steps_show()
 	if self.val == 2:
