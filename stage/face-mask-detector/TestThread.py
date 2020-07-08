@@ -1,7 +1,11 @@
 from robotDetector import *
 from PIL import Image
 from threading import Thread
+import sys
+import almath
+import motion
 import random
+
 class Fios(Thread):
     def __init__(self,val):
 	Thread.__init__(self)
@@ -12,6 +16,7 @@ class Fios(Thread):
 	self.weightsPath = os.path.sep.join(["face_detector","res10_300x300_ssd_iter_140000.caffemodel"])
 	self.faceNet = cv2.dnn.readNet(self.prototxtPath, self.weightsPath)
 	self.label = ""
+
 	# load the face mask detector model from disk
 	print("[INFO] loading face mask detector model...")
 	self.maskNet = load_model("mask_detector.model")
@@ -64,10 +69,12 @@ class Fios(Thread):
 	cv2.destroyAllWindows()
 
     def parole(self):
+	nbHuman = 0
+	nbMasque = 0
 	while True:
-		#self.pepper.tracker_service.registerTarget("Face", 0.15)
-		#self.pepper.tracker_service.setMode("Move")
-		#self.pepper.tracker_service.track("Face")
+		self.pepper.tracker_service.registerTarget("Face", 0.15)
+		self.pepper.tracker_service.setMode("Move")
+		self.pepper.tracker_service.track("Face")
 		frame = self.pepper.get_camera_frame(show=False)
 		(locs, preds) = self.pepper.detect_and_predict_mask(frame, self.faceNet, self.maskNet)
 
@@ -92,29 +99,39 @@ class Fios(Thread):
 			m = random.randint(0,9)
 			n = random.randint(0,100)
 		if self.label=="No Mask":
+			self.pepper.blink_eyes([255, 0, 0])
+			self.pepper.blink_eyes([0, 255, 0])
+			self.pepper.blink_eyes([255, 0, 0])
+			self.pepper.blink_eyes([0, 255, 0])
+			nbHuman = nbHuman+1
 			if m < 2:
-				self.pepper.say("Portez le masque si vous plait.")
+				self.pepper.say("Portez votre masque si vous plait.")
 			elif m < 4:
 				self.pepper.say("N'oubliez pas de porter votre masque.")
 			elif m < 6:
-				self.pepper.say("Vous avez oublier le masque?")
+				self.pepper.say("Vous oubliez votre masque?")
 			elif m < 8:
-				self.pepper.say("N'oubliez pas le masque.")
+				self.pepper.say("N'oubliez pas votre masque.")
 			else:
-				self.pepper.say("Bonjour,vous devez porter le masque.")
+				self.pepper.say("Bonjour,vous devez porter votre masque.")
 			print "image output"
 			cv2.imwrite("./tmp/"+self.label+str(n)+".png", frame)
+			print"I've met "+str(nbHuman)+" peoples,there're "+str(nbMasque)+" masks"
 			time.sleep(2)
 		elif self.label=="Mask":
-			self.pepper.say("C'est bien, vous avez porter le masque.")
+			nbHuman = nbHuman+1
+			nbMasque = nbMasque+1
+			self.pepper.say("C'est bien, vous portez votre masque.")
 			print "image output"
-			cv2.imwrite("./tmp/"+self.label+str(n)+".png", frame)		
+			cv2.imwrite("./tmp/"+self.label+str(n)+".png", frame)
+			print"I've met "+str(nbHuman)+" peoples,there're "+str(nbMasque)+" masks"		
 			time.sleep(2)
 		self.label=""
 		key = ""
+			
 		# if the `q` key was pressed, break from the loop
-		if key == ord("q"):
-			break
+		#if key == ord("q"):
+		#	break
 
     def def_point_show(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
@@ -310,40 +327,46 @@ class Fios(Thread):
 
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
         print "saved home position:"+str(self.home[0])
-
-        print "go to point a : "+str(0)+","+str(0)
-        self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-	print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        print "go to point b : "+str(3)+","+str(0)
-        self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
-	print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        print "go to point c : "+str(5)+","+str(0)
-        self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
-	print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-
-        print "go to point b1 : "+str(5)+","+str(-1)
-        self.pepper.navigation_service.navigateToInMap([5.,-1.,0.0])
-	print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        #print "go to point c1 : "+str(0)+","+str(5)
-        #self.pepper.navigation_service.navigateToInMap([0.,5.,0.0])
-	#print "reached c1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        print "go to point d1 : "+str(5)+","+str(-2)
-        self.pepper.navigation_service.navigateToInMap([5.,-2.,0.0])
-	print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        print "go to point e1 : "+str(5)+","+str(0)
-        self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
-	print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        print "go to point d : "+str(2)+","+str(0)
-        self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
-	print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        print "go to point e : "+str(0)+","+str(0)
-        self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-	print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        #the robot then returns home to rest
-        print "go to home : "+str(self.home[0][0])+","+str(self.home[0][1])
-        self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
-	print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	tours = 1
+	while tours > 0:
+		print "go to point a : "+str(0)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
+		print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point b : "+str(3)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
+		print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point c : "+str(5)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
+		print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		#print "go to point d : "+str(7)+","+str(0)
+		#self.pepper.navigation_service.navigateToInMap([7.,0.,0.0])
+		#print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		#print "go back to point c : "+str(5)+","+str(0)
+		#self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
+		#print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point b1 : "+str(5)+","+str(1)
+		self.pepper.navigation_service.navigateToInMap([5.,1.,0.0])
+		print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		#print "go to point c1 : "+str(0)+","+str(5)
+		#self.pepper.navigation_service.navigateToInMap([0.,5.,0.0])
+		#print "reached c1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point d1 : "+str(5)+","+str(2)
+		self.pepper.navigation_service.navigateToInMap([5.,2.,0.0])
+		print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point e1 : "+str(5)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
+		print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point d : "+str(2)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
+		print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point e : "+str(0)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
+		print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		#the robot then returns home to rest
+		print "go to home : "+str(self.home[0][0])+","+str(self.home[0][1])
+        	self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
+		print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		tours = tours - 1
         self.pepper.posture_service.goToPosture("StandInit",0.5)
 
     def run(self):
@@ -356,14 +379,24 @@ class Fios(Thread):
 		#while True:
 		#	if key == ord("q"):
 		#		break
-		self.navigateToPoint()		
+		self.pepper.posture_service.goToPosture("StandInit",0.5)				
+		#self.pepper.remoteTerminal()
+		#self.navigateToPoint()		
 		#self.steps()
 		#self.videoStream()
-
 		#self.def_point_show()
 		#self.steps_show()
 	if self.val == 2:
-		self.parole()
+		try:
+			self.parole()
+		except KeyboardInterrupt:
+			print "KeyBoard Interrupt initiated"
+			self.pepper.motion_service.stopMove()
+			exit()
+		except Exception, errorMsg:
+		        print str(errorMsg)
+		        print "This example is not allowed on this robot."
+		        exit()	
 
 myThread1 = Fios(1)
 myThread1.setName('Thread 1')
