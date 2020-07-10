@@ -4,13 +4,15 @@ import argparse
 import sys
 import time
 pepper = Pepper("192.168.2.169", 9559)
+pepper.autonomous_life_on()
+# pepper.motion_service.wakeUp()
 # pepper.clean_tablet()
 # pepper.tablet_service.hideWebview()
-pepper.tablet_show_web("http://www.google.fr")
+# pepper.tablet_show_web("http://www.google.fr")
 # # pepper.tablet_service.enableWifi()
 # # pepper.tablet_service.showWebview("http://www.google.fr")
 # subprocess.Popen(["python2", "-m", "SimpleHTTPServer"])
-# # pepper.share_localhost("/Users/llx33/Desktop/Projet2A/Projet2A/2.naoqi/")
+# pepper.share_localhost("/Users/llx33/Desktop/Projet2A/Projet2A/2.naoqi/")
 # pepper.subscribe_camera("camera_top", 2, 30)
 # while True:
 #     pepper.show_tablet_camera("camera top")

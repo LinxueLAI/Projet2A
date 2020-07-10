@@ -21,7 +21,7 @@ import socket
 import paramiko
 from scp import SCPClient
 # import tools
-from robot_detect_image import *
+# from robot_detect_image import *
 
 class Pepper:
     """
@@ -51,8 +51,8 @@ class Pepper:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.load_system_host_keys()
-        # ssh.connect(hostname=self.ip_address, username="nao", password="nao")
-        # self.scp = SCPClient(ssh.get_transport())
+        ssh.connect(hostname=self.ip_address, username="nao", password="nao")
+        self.scp = SCPClient(ssh.get_transport())
 
         self.posture_service = self.session.service("ALRobotPosture")
         self.motion_service = self.session.service("ALMotion")
@@ -984,7 +984,7 @@ class Pepper:
         self.audio_recorder.stopMicrophonesRecording()
         print("[INFO]: Speech recognition is in progress. Say something.")
         while True:
-            print(self.memory_service.getData("ALSpeechRecognition/Status"))
+            # print(self.memory_service.getData("ALSpeechRecognition/Status"))
             if self.memory_service.getData("ALSpeechRecognition/Status") == "SpeechDetected":
                 self.audio_recorder.startMicrophonesRecording("/home/nao/speech.wav", "wav", 48000, (0, 0, 1, 0))
                 print("[INFO]: Robot is listening to you")
@@ -1030,28 +1030,28 @@ class Pepper:
             self.system_service.setRobotName(new_name)
             self.restart_robot()
 
-    # def upload_file(self, file_name):
-    #     """
-    #     Upload file to the home directory of the robot
+    def upload_file(self, file_name):
+        """
+        Upload file to the home directory of the robot
 
-    #     :param file_name: File name with extension (or path)
-    #     :type file_name: string
-    #     """
-    #     self.scp.put(file_name)
-    #     print("[INFO]: File " + file_name + " uploaded")
-    #     self.scp.close()
+        :param file_name: File name with extension (or path)
+        :type file_name: string
+        """
+        self.scp.put(file_name)
+        print("[INFO]: File " + file_name + " uploaded")
+        self.scp.close()
 
-    # def download_file(self, file_name):
-    #     """
-    #     Download a file from robot to ./tmp folder in root.
+    def download_file(self, file_name):
+        """
+        Download a file from robot to ./tmp folder in root.
 
-    #     ..warning:: Folder ./tmp has to exist!
-    #     :param file_name: File name with extension (or path)
-    #     :type file_name: string
-    #     """
-    #     self.scp.get(file_name, local_path="/tmp/")
-    #     print("[INFO]: File " + file_name + " downloaded")
-    #     self.scp.close()
+        ..warning:: Folder ./tmp has to exist!
+        :param file_name: File name with extension (or path)
+        :type file_name: string
+        """
+        self.scp.get(file_name, local_path="/tmp/")
+        print("[INFO]: File " + file_name + " downloaded")
+        self.scp.close()
 
     def speech_to_text(self, audio_file):
         """

@@ -167,17 +167,10 @@ class Scan():
             self.face_detection.unsubscribe(proxy_name)
 
     def autonomous_life_on(self):
-        """Switch autonomous life on"""
         self.autonomous_life_service.setState("interactive")
         print("[INFO]: Autonomous life is on")
     
     def autonomous_life_off(self):
-        """
-        Switch autonomous life off
-
-        .. note:: After switching off, robot stays in resting posture. After \
-        turning autonomous life default posture is invoked
-        """
         self.autonomous_life_service.setState("disabled")
         self.stand()
         print("[INFO]: Autonomous life is off")
@@ -507,7 +500,7 @@ class Scan():
         self.posture.goToPosture("StandInit",0.5)
         return self.home, self.a, self.b, self.c, self.d, self.e, self.f  
 
-    def def_point_carre(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
+    def def_pointSuivant(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
         self.navigation.stopLocalization()
         self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
@@ -530,23 +523,23 @@ class Scan():
         self.b = self.navigation.getRobotPositionInMap()
         print "Saved position of B in map:"
         print self.b
-        time.sleep(2)
+        time.sleep(5)
 
-        self.motion.moveTo(0.0,0.0,-3.1415926/2) #rotation of 90 in radians the minus sine make the rotation movement clockwise
+        # self.motion.moveTo(0.0,0.0,-3.1415926/2) #rotation of 90 in radians the minus sine make the rotation movement clockwise
         self.motion.moveTo(2.0,0.0,0.0) 
         self.c = self.navigation.getRobotPositionInMap()
         print "Saved position of C in map:"
         print self.c
-        time.sleep(2)
+        time.sleep(5)
 
-        self.motion.moveTo(0.0,0.0,-3.1415926/2)
+        self.motion.moveTo(0.0,0.0,-3.1415926)
         self.motion.moveTo(3.0,0.0,0.0) 
         self.d = self.navigation.getRobotPositionInMap()
         print "Saved position of D in map:"
         print self.d
-        time.sleep(2)
+        time.sleep(5)
 
-        self.motion.moveTo(0.0,0.0,-3.1415926/2)
+        # self.motion.moveTo(0.0,0.0,-3.1415926)
         self.motion.moveTo(2.0,0.0,0.0) 
         self.e = self.navigation.getRobotPositionInMap()
         print "Saved position of e in map:"
@@ -592,16 +585,18 @@ class Scan():
 
     def steps(self):
         time.sleep(5)
-        #the steps followed to make the behaviour. first the robot goes to 3 defined points close to each other to make adjustments to the orientation
-        self.navigation.navigateToInMap([self.d[0][0],self.d[0][1],0.0])
-        self.navigation.navigateToInMap([self.e[0][0],self.e[0][1],0.0])
-        # self.navigation.navigateToInMap([self.f[0][0],self.f[0][1],0.0])
-        
+        #the steps followed to make the behaviour. first the robot goes to 3 defined points close to each other to make adjustments to the orientation    
         #then the robot starts moving autonomously to the target
+        print "go to point a : "+str(self.a[0][0])+","+str(self.a[0][1])
         self.navigation.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
+        print "go to point b : "+str(self.b[0][0])+","+str(self.b[0][1])
         self.navigation.navigateToInMap([self.b[0][0],self.b[0][1],0.0])
+        print "go to point c : "+str(self.c[0][0])+","+str(self.c[0][1])
         self.navigation.navigateToInMap([self.c[0][0],self.c[0][1],0.0])
-        
+        print "go to point d : "+str(self.d[0][0])+","+str(self.d[0][1])
+        self.navigation.navigateToInMap([self.d[0][0],self.d[0][1],0.0])
+        print "go to point e : "+str(self.e[0][0])+","+str(self.e[0][1])
+        self.navigation.navigateToInMap([self.e[0][0],self.e[0][1],0.0])
         
         #the robot then returns home to rest
         self.navigation.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
@@ -656,18 +651,19 @@ print(pepper.motion.getOrthogonalSecurityDistance())#0.4
 print("TangentialSecurityDistance=")
 print(pepper.motion.getTangentialSecurityDistance())#0.1
 # After the exploration the robot will stop in a random position
-# pepper.autonomous_life_off()
-pepper.explore(10.0)#radius
+pepper.autonomous_life_off()
+# pepper.explore(10.0)#radius
 print "exploration is finished"
-# pepper.motion.wakeUp()
+pepper.motion.wakeUp()
 print "wait for 10 sec"
-time.sleep(10)
+# time.sleep(10)
 # pepper.navigation.navigateToInMap([0.0,0.0,0.0])
 # pepper.navigation.navigateToInMap([0.5,0.0,0.0])
 # pepper.navigation.navigateToInMap([1.0,0.0,0.0])
-
-pepper.def_point_show()
-pepper.steps_show()
+pepper.def_pointSuivant()
+pepper.steps()
+# pepper.def_point_show()
+# pepper.steps_show()
 # first=pepper.def_point_carre()
 # print first # return self.home, self.a, self.b, self.c, self.d, self.e
 # print "now the robot try to follow some steps:"
