@@ -51,7 +51,7 @@ class Pepper:
         self.posture_service = self.session.service("ALRobotPosture")
         self.motion_service = self.session.service("ALMotion")
         self.tracker_service = self.session.service("ALTracker")
-        self.tts_service = self.session.service("ALAnimatedSpeech")#ALAnimatedSpeech/ALTextToSpeech
+        self.tts_service = self.session.service("ALTextToSpeech")#ALAnimatedSpeech/ALTextToSpeech
         self.tablet_service = self.session.service("ALTabletService")
         self.autonomous_life_service = self.session.service("ALAutonomousLife")
         self.navigation_service = self.session.service("ALNavigation")
@@ -608,20 +608,21 @@ class Pepper:
 
         """
         self.led_service.fadeRGB('AllLeds', rgb[0], rgb[1], rgb[2], 1.0)
+
     def trackFace(self):
         face_found = False
         self.unsubscribe_effector()
-	self.subscribe_camera("camera_top", 2, 30)
+	    self.subscribe_camera("camera_top", 2, 30)
         self.posture_service.goToPosture("Stand", 0.5)
         self.say("Je cherche un visage.")
         proxy_name = "FaceDetection" + str(np.random)
-	label=""
+	    label=""
         print("[INFO]:looking for a face.")
-	flow = True
-	show = False
+	    flow = True
+	    show = False
         while not face_found and flow==True:
-	    if cv2.waitKey(1) & 0xFF == ord('q'):
-		break
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
             self.face_detection_service.subscribe(proxy_name, 500, 0.0)
             for memory in range(5):
                 time.sleep(0.5)
@@ -629,46 +630,46 @@ class Pepper:
                 print("...")
                 if output and isinstance(output, list) and len(output) >= 2:
                     print("Face detected")
-		    print("timestamp=")
-		    print(output[0])
-		    print("faceinfoArray=")
-		    print(output[1])
-                    #print("FaceShapInfo=")
-		    faceInfoArray=output[1]
-		    for j in range( len(faceInfoArray)-1 ):
-                	faceInfo = faceInfoArray[j]
-                	# First Field = Shape info.
-                	faceShapeInfo = faceInfo[0]
-                	# Second Field = Extra info (empty for now).
-                	faceExtraInfo = faceInfo[1]
-                	print "Face Infos :  alpha %.3f - beta %.3f" % (faceShapeInfo[1], faceShapeInfo[2])
-                	print "Face Infos :  width %.3f - height %.3f" % (faceShapeInfo[3], faceShapeInfo[4])
-                	print "Face Extra Infos :" + str(faceExtraInfo)
-			self.say("Salut,"+faceExtraInfo[2])
+                    print("timestamp=")
+                    print(output[0])
+                    print("faceinfoArray=")
+                    print(output[1])
+                            #print("FaceShapInfo=")
+                    faceInfoArray=output[1]
+                    for j in range( len(faceInfoArray)-1 ):
+                        faceInfo = faceInfoArray[j]
+                        # First Field = Shape info.
+                        faceShapeInfo = faceInfo[0]
+                        # Second Field = Extra info (empty for now).
+                        faceExtraInfo = faceInfo[1]
+                        print "Face Infos :  alpha %.3f - beta %.3f" % (faceShapeInfo[1], faceShapeInfo[2])
+                        print "Face Infos :  width %.3f - height %.3f" % (faceShapeInfo[3], faceShapeInfo[4])
+                        print "Face Extra Infos :" + str(faceExtraInfo)
+                        self.say("Salut,"+faceExtraInfo[2])
                     face_found = True
-	    	    image = self.get_camera_frame(show)#true?
-		    label = self.detect_image(image)
-		    break
+	    	        image = self.get_camera_frame(show)#true?
+		            label = self.detect_image(image)
+		            break
 
         self.tracker_service.registerTarget("Face", 0.15)
         self.tracker_service.setMode("Move")
         self.tracker_service.track("Face")
-	#self.say("Veuillez attendre si vous plait.")
-	boucle = 1
-	while not label=="Mask":
-		print "boucle="+str(boucle)
-		text="Portez le masque si vous plait."
-		if boucle == 1:		
-			self.say(text)
-		#time.sleep(2)
-		image = self.get_camera_frame(show)#true?
-		label = detect_image(image)
-		boucle=boucle+1
+        #self.say("Veuillez attendre si vous plait.")
+        boucle = 1
+        while not label=="Mask":
+            print "boucle="+str(boucle)
+            text="Portez le masque si vous plait."
+            if boucle == 1:		
+                self.say(text)
+            #time.sleep(2)
+            image = self.get_camera_frame(show)#true?
+            label = detect_image(image)
+            boucle=boucle+1
 
 	self.say("C'est bien, vous avez porter le masque.")
 	self.unsubscribe_effector()
-        self.stand()
-       	self.face_detection_service.unsubscribe(proxy_name)	
+    self.stand()
+    self.face_detection_service.unsubscribe(proxy_name)	
 	self.unsubscribe_camera()
 	cv2.destroyAllWindows()
 
@@ -682,139 +683,611 @@ class Pepper:
         print("[INFO]: Autonomous life is on")
 
     def detect_image(self,image):
-	# load our serialized face detector model from disk
-	print("[INFO] loading face detector model...")
-	prototxtPath = os.path.sep.join(["face_detector", "deploy.prototxt"])
-	weightsPath = os.path.sep.join(["face_detector",
-		"res10_300x300_ssd_iter_140000.caffemodel"])
-	net = cv2.dnn.readNet(prototxtPath, weightsPath)
+        # load our serialized face detector model from disk
+        print("[INFO] loading face detector model...")
+        prototxtPath = os.path.sep.join(["face_detector", "deploy.prototxt"])
+        weightsPath = os.path.sep.join(["face_detector",
+            "res10_300x300_ssd_iter_140000.caffemodel"])
+        net = cv2.dnn.readNet(prototxtPath, weightsPath)
 
-	# load the face mask detector model from disk
-	print("[INFO] loading face mask detector model...")
-	model = load_model("mask_detector.model")  # need tensorflow
+        # load the face mask detector model from disk
+        print("[INFO] loading face mask detector model...")
+        model = load_model("mask_detector.model")  # need tensorflow
 
-	# load the input image from disk, clone it, and grab the image spatial
-	# dimensions
-	orig = image.copy()
-	(h, w) = image.shape[:2]
+        # load the input image from disk, clone it, and grab the image spatial
+        # dimensions
+        orig = image.copy()
+        (h, w) = image.shape[:2]
 
-	# construct a blob from the image
-	blob = cv2.dnn.blobFromImage(image, 1.0, (300, 300),
-		(104.0, 177.0, 123.0))
+        # construct a blob from the image
+        blob = cv2.dnn.blobFromImage(image, 1.0, (300, 300),
+            (104.0, 177.0, 123.0))
 
-	# pass the blob through the network and obtain the face detections
-	print("[INFO] computing face detections...")
-	net.setInput(blob)
-	detections = net.forward()
-	# loop over the detections
-	for i in range(0, detections.shape[2]):
-		# extract the confidence (i.e., probability) associated with
-		# the detection
-		confidence = detections[0, 0, i, 2]
+        # pass the blob through the network and obtain the face detections
+        print("[INFO] computing face detections...")
+        net.setInput(blob)
+        detections = net.forward()
+        # loop over the detections
+        for i in range(0, detections.shape[2]):
+            # extract the confidence (i.e., probability) associated with
+            # the detection
+            confidence = detections[0, 0, i, 2]
 
-		# filter out weak detections by ensuring the confidence is
-		# greater than the minimum confidence
-		if confidence > 0.5:
-			# compute the (x, y)-coordinates of the bounding box for
-			# the object
-			box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-			(startX, startY, endX, endY) = box.astype("int")
+            # filter out weak detections by ensuring the confidence is
+            # greater than the minimum confidence
+            if confidence > 0.5:
+                # compute the (x, y)-coordinates of the bounding box for
+                # the object
+                box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                (startX, startY, endX, endY) = box.astype("int")
 
-			# ensure the bounding boxes fall within the dimensions of
-			# the frame
-			(startX, startY) = (max(0, startX), max(0, startY))
-			(endX, endY) = (min(w - 1, endX), min(h - 1, endY))
+                # ensure the bounding boxes fall within the dimensions of
+                # the frame
+                (startX, startY) = (max(0, startX), max(0, startY))
+                (endX, endY) = (min(w - 1, endX), min(h - 1, endY))
 
-			# extract the face ROI, convert it from BGR to RGB channel
-			# ordering, resize it to 224x224, and preprocess it
-			face = image[startY:endY, startX:endX]
-			face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
-			face = cv2.resize(face, (224, 224))
-			face = img_to_array(face)       ## need tensorflow
-			face = preprocess_input(face)   ## need tensorflow
-			face = np.expand_dims(face, axis=0)
+                # extract the face ROI, convert it from BGR to RGB channel
+                # ordering, resize it to 224x224, and preprocess it
+                face = image[startY:endY, startX:endX]
+                face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+                face = cv2.resize(face, (224, 224))
+                face = img_to_array(face)       ## need tensorflow
+                face = preprocess_input(face)   ## need tensorflow
+                face = np.expand_dims(face, axis=0)
 
-			# pass the face through the model to determine if the face
-			# has a mask or not
-			(mask, withoutMask) = model.predict(face)[0]
+                # pass the face through the model to determine if the face
+                # has a mask or not
+                (mask, withoutMask) = model.predict(face)[0]
 
-			# determine the class label and color we'll use to draw
-			# the bounding box and text
-			label = "Mask" if mask > withoutMask else "No Mask"
-			color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
+                # determine the class label and color we'll use to draw
+                # the bounding box and text
+                label = "Mask" if mask > withoutMask else "No Mask"
+                color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
 
-			# include the probability in the label
-			label1 = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
+                # include the probability in the label
+                label1 = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
 
-			# display the label and bounding box rectangle on the output
-			# frame
-			cv2.putText(image, label1, (startX, startY - 10),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
-			cv2.rectangle(image, (startX, startY), (endX, endY), color, 2)
+                # display the label and bounding box rectangle on the output
+                # frame
+                cv2.putText(image, label1, (startX, startY - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+                cv2.rectangle(image, (startX, startY), (endX, endY), color, 2)
 
-	# show the output image
-	#cv2.imshow("Output", image)
-	cv2.imwrite("./tmp/"+label+".png", image)# save the image
-	#cv2.waitKey(0)
-	return label
+        # show the output image
+        #cv2.imshow("Output", image)
+        cv2.imwrite("./tmp/"+label+".png", image)# save the image
+        #cv2.waitKey(0)
+        return label
 
     def detect_and_predict_mask(self,frame, faceNet, maskNet):
-	# grab the dimensions of the frame and then construct a blob
-	# from it
-	(h, w) = frame.shape[:2]
-	blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300),
-		(104.0, 177.0, 123.0))
+        # grab the dimensions of the frame and then construct a blob
+        # from it
+        (h, w) = frame.shape[:2]
+        blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300),
+            (104.0, 177.0, 123.0))
 
-	# pass the blob through the network and obtain the face detections
-	faceNet.setInput(blob)
-	detections = faceNet.forward()
+        # pass the blob through the network and obtain the face detections
+        faceNet.setInput(blob)
+        detections = faceNet.forward()
 
-	# initialize our list of faces, their corresponding locations,
-	# and the list of predictions from our face mask network
-	faces = []
-	locs = []
-	preds = []
+        # initialize our list of faces, their corresponding locations,
+        # and the list of predictions from our face mask network
+        faces = []
+        locs = []
+        preds = []
 
-	# loop over the detections
-	for i in range(0, detections.shape[2]):
-		# extract the confidence (i.e., probability) associated with
-		# the detection
-		confidence = detections[0, 0, i, 2]
+        # loop over the detections
+        for i in range(0, detections.shape[2]):
+            # extract the confidence (i.e., probability) associated with
+            # the detection
+            confidence = detections[0, 0, i, 2]
 
-		# filter out weak detections by ensuring the confidence is
-		# greater than the minimum confidence
-		if confidence > 0.5:
-			# compute the (x, y)-coordinates of the bounding box for
-			# the object
-			box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-			(startX, startY, endX, endY) = box.astype("int")
+            # filter out weak detections by ensuring the confidence is
+            # greater than the minimum confidence
+            if confidence > 0.5:
+                # compute the (x, y)-coordinates of the bounding box for
+                # the object
+                box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                (startX, startY, endX, endY) = box.astype("int")
 
-			# ensure the bounding boxes fall within the dimensions of
-			# the frame
-			(startX, startY) = (max(0, startX), max(0, startY))
-			(endX, endY) = (min(w - 1, endX), min(h - 1, endY))
+                # ensure the bounding boxes fall within the dimensions of
+                # the frame
+                (startX, startY) = (max(0, startX), max(0, startY))
+                (endX, endY) = (min(w - 1, endX), min(h - 1, endY))
 
-			# extract the face ROI, convert it from BGR to RGB channel
-			# ordering, resize it to 224x224, and preprocess it
-			face = frame[startY:endY, startX:endX]
-			face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
-			face = cv2.resize(face, (224, 224))
-			face = img_to_array(face)
-			face = preprocess_input(face)
-			face = np.expand_dims(face, axis=0)
+                # extract the face ROI, convert it from BGR to RGB channel
+                # ordering, resize it to 224x224, and preprocess it
+                face = frame[startY:endY, startX:endX]
+                face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+                face = cv2.resize(face, (224, 224))
+                face = img_to_array(face)
+                face = preprocess_input(face)
+                face = np.expand_dims(face, axis=0)
 
-			# add the face and bounding boxes to their respective
-			# lists
-			faces.append(face)
-			locs.append((startX, startY, endX, endY))
+                # add the face and bounding boxes to their respective
+                # lists
+                faces.append(face)
+                locs.append((startX, startY, endX, endY))
 
-	# only make a predictions if at least one face was detected
-	if len(faces) > 0:
-		# for faster inference we'll make batch predictions on *all*
-		# faces at the same time rather than one-by-one predictions
-		# in the above `for` loop
-		preds = maskNet.predict(faces)
+        # only make a predictions if at least one face was detected
+        if len(faces) > 0:
+            # for faster inference we'll make batch predictions on *all*
+            # faces at the same time rather than one-by-one predictions
+            # in the above `for` loop
+            preds = maskNet.predict(faces)
 
-	# return a 2-tuple of the face locations and their corresponding
-	# locations
-	return (locs, preds)
+        # return a 2-tuple of the face locations and their corresponding
+        # locations
+        return (locs, preds)
+
+
+"""
+    mouvement
+"""
+
+    def dance(self,motion_service):
+        names = list()
+        times = list()
+        keys = list()
+
+        names.append("HeadPitch")
+        times.append([1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.16, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([-0.476475, 0.338594, -0.476475, 0.338594, -0.476475, 0.338594, -0.476475, 0.338594, 0.0680678, -0.476475, 0.338594, -0.476475, 0.338594, -0.476475, 0.338594, -0.476475, 0.338594, -0.17185])
+
+        names.append("HeadYaw")
+        times.append([1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.16, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([-0.745256, 0.0411095, -0.745256, 0.0411095, -0.745256, 0.018508, -0.745256, 0.289725, 0.425684, 0.745256, -0.0411095, 0.745256, -0.0411095, 0.745256, -0.018508, 0.745256, -0.289725, 0.00916195])
+
+        names.append("HipPitch")
+        times.append([0.68, 1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([-0.376033, -0.036954, -0.344024, -0.0404086, -0.339835, -0.038321, -0.341769, -0.0367355, -0.34817, -0.035085, -0.341769, -0.0382761, -0.339629, -0.0396041, -0.341605, -0.0362713, -0.343065, -0.0495279])
+
+        names.append("HipRoll")
+        times.append([1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+        names.append("KneePitch")
+        times.append([0.68, 1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([0.166965, -0.00379234, 0.185949, -0.0129339, 0.180821, -0.00320919, 0.187035, -0.00931236, 0.182162, -0.0111253, 0.187035, -0.00683206, 0.184441, -0.0119436, 0.179202, -0.0114876, 0.187691, -0.013167])
+
+        names.append("LElbowRoll")
+        times.append([0.68, 1.04, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.12, 8.48, 8.8, 9.2, 9.64, 10.12, 10.6, 11, 11.44, 11.92, 12.36, 12.76, 13.2, 13.68, 14.16, 14.56, 15, 15.6, 16.2, 16.4])
+        keys.append([-1.37289, -1.12923, -0.369652, -0.202446, -0.369652, -0.202446, -0.369652, -0.202446, -0.369652, -0.202446, -0.820305, -0.23305, -0.138102, -1.309, -0.257754, -1.4591, -0.138102, -1.309, -0.257754, -1.4591, -0.138102, -1.309, -0.257754, -1.4591, -0.138102, -1.309, -0.257754, -0.984366, -0.513992, -0.424876])
+
+        names.append("LElbowYaw")
+        times.append([0.68, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.12, 8.48, 8.8, 9.2, 9.64, 10.12, 10.6, 11, 11.44, 11.92, 12.36, 12.76, 13.2, 13.68, 14.16, 14.56, 15, 15.6, 16.2, 16.4])
+        keys.append([-0.65506, -0.380475, -0.618244, -0.380475, -0.618244, -0.380475, -0.618244, -0.380475, -0.618244, 0.410152, 0.818273, 0.851412, 0.0750492, 0.00157596, 0.460767, 0.851412, 0.0750492, 0.00157596, 0.460767, 0.851412, 0.0750492, 0.00157596, 0.460767, 0.851412, 0.0750492, 0.00157596, -1.34565, -1.22484, -1.21037])
+
+        names.append("LHand")
+        times.append([0.68, 1.04, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.48, 8.8, 9.2, 9.64, 10.12, 10.6, 11, 11.44, 11.92, 12.36, 12.76, 13.2, 13.68, 14.16, 14.56, 15, 15.6, 16.2, 16.4])
+        keys.append([0.2, 0.6, 0.2648, 0.264, 0.2648, 0.264, 0.2648, 0.264, 0.2648, 0.264, 0.663802, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.5284, 0.936396, 0.950347, 0.2968])
+
+        names.append("LShoulderPitch")
+        times.append([0.68, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.12, 8.48, 8.8, 9.64, 10.6, 11.44, 12.36, 13.2, 14.16, 15, 16.4])
+        keys.append([0.97784, 1.29573, 1.40466, 1.29573, 1.40466, 1.29573, 1.40466, 1.29573, 1.40466, 0.172788, -1.04904, -1.19188, 0.995607, -1.19188, 0.995607, -1.19188, 0.995607, -1.19188, 0.995607, 1.47106])
+
+        names.append("LShoulderRoll")
+        times.append([0.68, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.48, 8.8, 9.2, 9.64, 10.12, 10.6, 11, 11.44, 11.92, 12.36, 12.76, 13.2, 13.68, 14.16, 14.56, 15, 15.6, 16.2])
+        keys.append([0.500047, 0.401871, 0.35585, 0.401871, 0.35585, 0.401871, 0.35585, 0.401871, 0.35585, 0.886453, 0.966481, 1.23332, 0.324005, 1.23332, 0.966481, 1.23332, 0.324005, 1.23332, 0.966481, 1.23332, 0.324005, 1.23332, 0.966481, 1.23332, 0.324005, 0.407503, 0.146991])
+
+        names.append("LWristYaw")
+        times.append([0.68, 1.04, 1.48, 2.32, 3.28, 4.12, 5.04, 5.88, 6.84, 7.68, 8.48, 8.8, 9.64, 10.6, 11.44, 12.36, 13.2, 14.16, 15, 16.2, 16.4])
+        keys.append([0.11961, -0.289725, -0.395814, -0.420357, -0.395814, -0.420357, -0.395814, -0.420357, -0.395814, -0.420357, -0.122946, -0.107338, -0.400331, -0.107338, -0.400331, -0.107338, -0.400331, -0.107338, -0.400331, 0.000370312, 0.0827939])
+
+        names.append("RElbowRoll")
+        times.append([0.68, 1.08, 1.52, 1.92, 2.36, 2.84, 3.32, 3.72, 4.16, 4.64, 5.08, 5.48, 5.92, 6.4, 6.88, 7.28, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 15.64, 16.24, 16.44])
+        keys.append([1.34689, 1.1205, 0.138102, 1.309, 0.257754, 1.4591, 0.138102, 1.309, 0.257754, 1.4591, 0.138102, 1.309, 0.257754, 1.4591, 0.138102, 1.309, 0.257754, 0.372085, 0.369652, 0.202446, 0.369652, 0.202446, 0.369652, 0.202446, 0.369652, 0.202446, 0.82205, 0.519567, 0.429562])
+
+        names.append("RElbowYaw")
+        times.append([0.68, 1.08, 1.52, 1.92, 2.36, 2.84, 3.32, 3.72, 4.16, 4.64, 5.08, 5.48, 5.92, 6.4, 6.88, 7.28, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 15.64, 16.24, 16.44])
+        keys.append([0.59515, 0.567232, -0.851412, -0.0750492, -0.00157596, -0.460767, -0.851412, -0.0750492, -0.00157596, -0.460767, -0.851412, -0.0750492, -0.00157596, -0.460767, -0.851412, -0.0750492, -0.00157596, 0.352279, 0.380475, 0.618244, 0.380475, 0.618244, 0.380475, 0.618244, 0.380475, 0.618244, 1.26711, 1.23132, 1.21028])
+
+        names.append("RHand")
+        times.append([0.68, 1.08, 1.52, 1.92, 2.36, 2.84, 3.32, 3.72, 4.16, 4.64, 5.08, 5.48, 5.92, 6.4, 6.88, 7.28, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24, 16.44])
+        keys.append([0.2, 0.95, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.0283999, 0.75, 0.928, 0.3, 0.5284, 0.271478, 0.2648, 0.264, 0.2648, 0.264, 0.2648, 0.264, 0.2648, 0.264, 0.596785, 0.2976])
+
+        names.append("RShoulderPitch")
+        times.append([0.68, 1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24])
+        keys.append([0.915841, -1.19188, 0.995607, -1.19188, 0.995607, -1.19188, 0.995607, -1.19188, 0.995607, 1.281, 1.29573, 1.40466, 1.29573, 1.40466, 1.29573, 1.40466, 1.29573, 1.40466, 1.47268])
+
+        names.append("RShoulderRoll")
+        times.append([0.68, 1.08, 1.52, 1.92, 2.36, 2.84, 3.32, 3.72, 4.16, 4.64, 5.08, 5.48, 5.92, 6.4, 6.88, 7.28, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 15.64, 16.44])
+        keys.append([-0.905123, -1.30837, -0.966481, -1.23332, -0.324005, -1.23332, -0.966481, -1.23332, -0.324005, -1.23332, -0.966481, -1.23332, -0.324005, -1.23332, -0.966481, -1.23332, -0.324005, -0.397371, -0.401871, -0.35585, -0.401871, -0.35585, -0.401871, -0.35585, -0.401871, -0.35585, -0.310669, -0.174533])
+
+        names.append("RWristYaw")
+        times.append([0.68, 1.52, 2.36, 3.32, 4.16, 5.08, 5.92, 6.88, 7.72, 8.52, 8.84, 9.68, 10.64, 11.48, 12.4, 13.24, 14.2, 15.04, 16.24, 16.44])
+        keys.append([-0.401949, 0.107338, 0.400331, 0.107338, 0.400331, 0.107338, 0.400331, 0.107338, 0.400331, 0.391888, 0.395814, 0.420357, 0.395814, 0.420357, 0.395814, 0.420357, 0.395814, 0.420357, 0.00501826, 0.108872])
+
+        self.motion_service.angleInterpolation(names, keys, times, True)
+
+    def wave(self,motion_service):
+        # Choregraphe bezier export in Python.
+        names = list()
+        times = list()
+        keys = list()
+
+        names.append("HeadPitch")
+        times.append([0.1, 11.9])
+        keys.append([-0.199418, -0.199418])
+
+        names.append("HeadYaw")
+        times.append([0.1, 11.9])
+        keys.append([0, 0])
+
+        names.append("HipPitch")
+        times.append([0.1, 11.9])
+        keys.append([-0.0322137, -0.0322137])
+
+        names.append("HipRoll")
+        times.append([0.1, 11.9])
+        keys.append([-0.0107379, -0.0107379])
+
+        names.append("KneePitch")
+        times.append([0.1, 11.9])
+        keys.append([0.0107379, 0.0107379])
+
+        names.append("LElbowRoll")
+        times.append([0.1, 0.9, 1.4, 1.9, 2.4, 2.9, 3.4, 3.9, 4.4, 4.9, 5.4, 5.9, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.9, 10.4, 10.9, 11.9])
+        keys.append([-0.523088, -1.14319, -0.830777, -1.14319, -1.33867, -1.14319, -0.830777, -1.14319, -1.33867, -1.14319, -0.830777, -1.14319, -1.33867, -1.14319, -0.830777, -1.14319, -1.33867, -1.14319, -0.755728, -1.14319, -1.33867, -1.14319, -0.523087])
+
+        names.append("LElbowYaw")
+        times.append([0.1, 0.9, 1.4, 1.9, 2.4, 2.9, 3.4, 3.9, 4.4, 4.9, 5.4, 5.9, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.9, 10.4, 10.9, 11.9])
+        keys.append([-1.23792, -1.39103, -2.08567, -1.39103, -0.825541, -1.39103, -2.08567, -1.39103, -0.825541, -1.39103, -2.08567, -1.39103, -0.825541, -1.39103, -2.08567, -1.39103, -0.825541, -1.39103, -2.08567, -1.39103, -0.825541, -1.39103, -1.23792])
+
+        names.append("LHand")
+        times.append([0.1, 0.9, 1.4, 1.9, 2.4, 2.9, 3.4, 3.9, 4.4, 4.9, 5.4, 5.9, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.9, 10.4, 10.9, 11.9])
+        keys.append([0.589631, 0.87, 0.78, 0.87, 0.87, 0.87, 0.78, 0.87, 0.87, 0.87, 0.78, 0.87, 0.87, 0.87, 0.78, 0.87, 0.87, 0.87, 0.78, 0.87, 0.87, 0.87, 0.589631])
+
+        names.append("LShoulderPitch")
+        times.append([0.1, 0.9, 1.4, 1.9, 2.4, 2.9, 3.4, 3.9, 4.4, 4.9, 5.4, 5.9, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.9, 10.4, 10.9, 11.9])
+        keys.append([1.56159, -0.246576, -0.1309, -0.249582, -0.249582, -0.249582, -0.1309, -0.249582, -0.249582, -0.249582, -0.1309, -0.249582, -0.249582, -0.249582, -0.1309, -0.249582, -0.249582, -0.249582, -0.1309, -0.249582, -0.249582, -0.249582, 1.56159])
+
+        names.append("LShoulderRoll")
+        times.append([0.1, 0.9, 1.4, 1.9, 2.4, 2.9, 3.4, 3.9, 4.4, 4.9, 5.4, 5.9, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.9, 10.4, 10.9, 11.9])
+        keys.append([0.144194, 0.678972, 0.328122, 0.383972, 0.383972, 0.383972, 0.328122, 0.383972, 0.383972, 0.383972, 0.328122, 0.383972, 0.383972, 0.383972, 0.328122, 0.383972, 0.383972, 0.383972, 0.328122, 0.383972, 0.383972, 0.383972, 0.144194])
+
+        names.append("LWristYaw")
+        times.append([0.1, 0.9, 1.4, 1.9, 2.4, 2.9, 3.4, 3.9, 4.4, 4.9, 5.4, 5.9, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.9, 10.4, 10.9, 11.9])
+        keys.append([0.0137641, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 0.0137641])
+
+        names.append("RElbowRoll")
+        times.append([0.1, 11.9])
+        keys.append([0.523088, 0.523087])
+
+        names.append("RElbowYaw")
+        times.append([0.1, 11.9])
+        keys.append([1.23025, 1.23025])
+
+        names.append("RHand")
+        times.append([0.1, 11.9])
+        keys.append([0.589631, 0.589631])
+
+        names.append("RShoulderPitch")
+        times.append([0.1, 11.9])
+        keys.append([1.55852, 1.55852])
+
+        names.append("RShoulderRoll")
+        times.append([0.1, 11.9])
+        keys.append([-0.14266, -0.14266])
+
+        names.append("RWristYaw")
+        times.append([0.1, 11.9])
+        keys.append([0.00149202, 0.00149202])
+        try:
+        # uncomment the following line and modify the IP if you use this script outside Choregraphe.
+        # motion = ALProxy("ALMotion", IP, 9559)
+            self.motion_service.angleInterpolation(names, keys, times, True)
+        except BaseException, err:
+            print err
+    def taijiquan(self,motion_service):
+        names = list()
+        times = list()
+        keys = list()
+
+        names.append("HeadPitch")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 46, 49.8])
+        keys.append([0, 8.95233e-08, -4.76838e-07, 8.89455e-08, 1.04976e-07, 0.331613, 0.314159, 9.19019e-08, -0.331613, 0.139626, -0.0872665, 0.139626, 0.383972, 0.558505, 0.383972, -0.331613, 0.139626, -0.0872665, 0.139626, 0.383972, 0, -0.190258])
+
+        names.append("HeadYaw")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 46, 49.8])
+        keys.append([0, 8.42936e-08, 8.42938e-08, 8.42938e-08, -4.76838e-07, 0.314159, -0.296706, -1.18682, -0.279253, 0.20944, 1.5708, 0.20944, 0.139626, 0, -0.139626, 0.279253, -0.20944, -1.5708, -0.20944, -0.139626, 0, -0.00310993])
+
+        names.append("HipPitch")
+        times.append([6.8, 10.8, 12.8, 18.8, 28.2, 34.2, 36.8, 39.4, 42, 44.2])
+        keys.append([-0.307178, -0.0444883, -0.444757, -0.0454611, -0.444757, -0.0454611, -0.444757, -0.0454611, -0.444757, -0.0454611])
+
+        names.append("HipRoll")
+        times.append([10.8, 12.8, 18.8, 28.2, 34.2, 36.8, 39.4, 42, 44.2])
+        keys.append([0.000864661, 0.00719934, 0.00719934, 0.00719934, 0.00719934, 0.00719934, 0.00719934, 0.00719934, 0.00719934])
+
+        names.append("KneePitch")
+        times.append([6.8, 10.8, 12.8, 18.8, 28.2, 34.2, 36.8, 39.4, 42, 44.2])
+        keys.append([0.0994838, -0.0143759, 0.178257, -0.0113593, 0.178257, -0.0113593, 0.178257, -0.0113593, 0.178257, -0.0113593])
+
+        names.append("LElbowRoll")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 45.2, 46, 49.8])
+        keys.append([0, -0.698132, -1.0472, 0, 0, -1.65806, -0.959931, -1.48353, -1.01229, -1.01229, 0, -1.01229, -1.01229, -0.890118, -0.855211, -1.11701, -0.855211, -1.25664, -0.855211, -0.855211, -0.994838, -1.4207, -0.38806])
+
+        names.append("LElbowYaw")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 45.2, 46, 49.8])
+        keys.append([-1.5708, -1.5708, -1.5708, -1.5708, -1.5708, -0.383972, 0, 0, 0, 0, 0, 0, 0, 0.20944, 0.191986, -0.418879, -0.418879, -0.0872665, -0.418879, 0.191986, -0.378736, -0.244346, -1.18276])
+
+        names.append("LHand")
+        times.append([2.8, 49.8])
+        keys.append([0, 0.2984])
+
+        names.append("LShoulderPitch")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 46, 49.8])
+        keys.append([1.5708, 1.91986, 2.0944, 1.5708, 0, 0.366519, 0.349066, 0.191986, -0.802851, -0.174533, -0.296706, -0.174533, 0.523599, 0.471239, 0.331613, -0.471239, 0.0698132, -0.0698132, 0.0698132, 0.331613, 1.69297, 1.52936])
+
+        names.append("LShoulderRoll")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 46, 49.8])
+        keys.append([0.174533, 0.349066, 0.174533, 0.174533, 0.174533, 0.698132, 0, 0.0872665, 0.174533, 0.401426, 1.15192, 0.401426, 0.401426, 0.174533, 0, 0.401426, 0, 0, 0, 0.20944, 0.942478, 0.107338])
+
+        names.append("LWristYaw")
+        times.append([2.8, 49.8])
+        keys.append([-1.53589, 0.139552])
+
+        names.append("RElbowRoll")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 45.2, 46, 49.8])
+        keys.append([0, 0.698132, 1.0472, 2.57424e-07, 0, 1.23918, 1.64061, 0.0698132, 1.11701, 0.855211, 1.25664, 0.855211, 0.855211, 0.890118, 1.01229, 1.01229, 1.01229, 0.0349066, 1.01229, 1.01229, 1.13272, 1.36659, 0.395814])
+
+        names.append("RElbowYaw")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 45.2, 46, 49.8])
+        keys.append([1.5708, 1.5708, 1.5708, 1.5708, 1.5708, 0.191986, 0.349066, 1.5708, 0.418879, 0.418879, 0.0872665, 0.418879, -0.191986, -0.20944, 0, 0, 0, 0, 0, 0, 0.342085, 0.244346, 1.15966])
+
+        names.append("RHand")
+        times.append([2.8, 49.8])
+        keys.append([0, 0.302])
+
+        names.append("RShoulderPitch")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 46, 49.8])
+        keys.append([1.5708, 1.91986, 2.0944, 1.5708, 0, 0.174533, 0.610865, 1.0472, -0.471239, 0.0698132, -0.0698132, 0.0698132, 0.331613, 0.471239, 0.523599, -0.802851, -0.174533, -0.296706, -0.174533, 0.523599, 1.69297, 1.51563])
+
+        names.append("RShoulderRoll")
+        times.append([2.8, 4.8, 6.8, 8.8, 10.8, 12.8, 14.8, 16.8, 18.8, 20.8, 23.4, 26, 28.2, 30.2, 32.2, 34.2, 36.8, 39.4, 42, 44.2, 46, 49.8])
+        keys.append([-0.174533, -0.174533, -0.349066, -0.174533, -0.174515, -0.0698132, -0.837758, -1.51844, -0.401426, 0, 0, 0, 0, -0.174533, -0.401426, -0.174533, -0.401426, -1.15192, -0.401426, -0.558505, -0.942478, -0.099752])
+
+        names.append("RWristYaw")
+        times.append([2.8, 49.8])
+        keys.append([1.53589, 0.164096])
+
+        try:
+        # uncomment the following line and modify the IP if you use this script outside Choregraphe.
+        # motion = ALProxy("ALMotion", IP, 9559)
+            self.motion_service.angleInterpolation(names, keys, times, True)
+        except BaseException, err:
+            print err
+
+
+    def wavewithhand(self,motion_service):
+        names = list()
+        times = list()
+        keys = list()
+
+        names.append("HeadPitch")
+        times.append([0.1, 46.1])
+        keys.append([-0.199418, -0.199418])
+
+        names.append("HeadYaw")
+        times.append([0.1, 46.1])
+        keys.append([0, 0])
+
+        names.append("HipPitch")
+        times.append([0.1, 46.1])
+        keys.append([-0.0322137, -0.0322137])
+
+        names.append("HipRoll")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([-0.0107379, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.0107379])
+
+        names.append("KneePitch")
+        times.append([0.1, 46.1])
+        keys.append([0.0107379, 0.0107379])
+
+        names.append("LElbowRoll")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([-0.523087, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.911062, -0.202458, -0.523087])
+
+        names.append("LElbowYaw")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([-1.23792, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -0.434587, -1.83085, -1.23792])
+
+        names.append("LHand")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([0.589631, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.589631])
+
+        names.append("LShoulderPitch")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([1.56159, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, 1.56159])
+
+        names.append("LShoulderRoll")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([0.144194, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.261799, 0.76969, 0.144194])
+
+        names.append("LWristYaw")
+        times.append([0.1, 1.9, 5.9, 9.9, 13.9, 17.9, 21.9, 25.9, 29.9, 33.9, 37.9, 41.9, 46.1])
+        keys.append([0.0137641, 0.455531, 0.455531, 0.455531, 0.455531, 0.455531, 0.455531, 0.455531, 0.455531, 0.455531, 0.455531, 0.455531, 0.0137641])
+
+        names.append("RElbowRoll")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([0.523087, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.911062, 0.202458, 0.523087])
+
+        names.append("RElbowYaw")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([1.23025, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 0.434587, 1.83085, 1.23025])
+
+        names.append("RHand")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([0.589631, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.89, 0.92, 0.589631])
+
+        names.append("RShoulderPitch")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([1.55852, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, -1.08559, -1.12399, 1.55852])
+
+        names.append("RShoulderRoll")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
+        keys.append([-0.14266, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.261799, -0.76969, -0.14266])
+
+        names.append("RWristYaw")
+        times.append([0.1, 1.9, 5.9, 9.9, 13.9, 17.9, 21.9, 25.9, 29.9, 33.9, 37.9, 41.9, 46.1])
+        keys.append([0.00149202, -0.455531, -0.455531, -0.455531, -0.455531, -0.455531, -0.455531, -0.455531, -0.455531, -0.455531, -0.455531, -0.455531, 0.00149202])
+
+        try:
+            self.motion_service.angleInterpolation(names, keys, times, True)
+        except BaseException, err:
+            print err
+
+    def moveBody(self,motion_service):
+        names = list()
+        times = list()
+        keys = list()
+
+        names.append("HeadPitch")
+        times.append([0.01, 44.9])
+        keys.append([-0.199418, -0.199418])
+
+        names.append("HeadYaw")
+        times.append([0.01, 44.9])
+        keys.append([0, 0])
+
+        names.append("HipPitch")
+        times.append([0.01, 44.9])
+        keys.append([-0.0322137, -0.0322137])
+
+        names.append("HipRoll")
+        times.append([0.01, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 44.9])
+        keys.append([-0.0107379, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.0107379])
+
+        names.append("KneePitch")
+        times.append([0.01, 44.9])
+        keys.append([0.0107379, 0.0107379])
+
+        names.append("LElbowRoll")
+        times.append([0.01, 44.9])
+        keys.append([-0.523087, -0.523087])
+
+        names.append("LElbowYaw")
+        times.append([0.01, 44.9])
+        keys.append([-1.23792, -1.23792])
+
+        names.append("LHand")
+        times.append([0.01, 44.9])
+        keys.append([0.589631, 0.589631])
+
+        names.append("LShoulderPitch")
+        times.append([0.01, 44.9])
+        keys.append([1.56159, 1.56159])
+
+        names.append("LShoulderRoll")
+        times.append([0.01, 44.9])
+        keys.append([0.144194, 0.144194])
+
+        names.append("LWristYaw")
+        times.append([0.01, 44.9])
+        keys.append([0.0137641, 0.0137641])
+
+        names.append("RElbowRoll")
+        times.append([0.01, 44.9])
+        keys.append([0.523087, 0.523087])
+
+        names.append("RElbowYaw")
+        times.append([0.01, 44.9])
+        keys.append([1.23025, 1.23025])
+
+        names.append("RHand")
+        times.append([0.01, 44.9])
+        keys.append([0.589631, 0.589631])
+
+        names.append("RShoulderPitch")
+        times.append([0.01, 44.9])
+        keys.append([1.55852, 1.55852])
+
+        names.append("RShoulderRoll")
+        times.append([0.01, 44.9])
+        keys.append([-0.14266, -0.14266])
+
+        names.append("RWristYaw")
+        times.append([0.01, 44.9])
+        keys.append([0.00149202, 0.00149202])
+
+        try:
+            self.motion_service.angleInterpolation(names, keys, times, True)
+        except BaseException, err:
+            print err
+    def moveTest(self,motion_service):
+        names = list()
+        times = list()
+        keys = list()
+
+        names.append("HeadPitch")
+        times.append([0.1, 35.9])
+        keys.append([-0.199418, -0.199418])
+
+        names.append("HeadYaw")
+        times.append([0.1, 35.9])
+        keys.append([0, 0])
+
+        names.append("HipPitch")
+        times.append([0.1, 35.9])
+        keys.append([-0.0322137, -0.0322137])
+
+        names.append("HipRoll")
+        times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9])
+        keys.append([-0.0107379, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, -0.0107379])
+
+        names.append("KneePitch")
+        times.append([0.1, 35.9])
+        keys.append([0.0107379, 0.0107379])
+
+        names.append("LElbowRoll")
+        times.append([0.1, 35.9])
+        keys.append([-0.523087, -0.523087])
+
+        names.append("LElbowYaw")
+        times.append([0.1, 35.9])
+        keys.append([-1.23792, -1.23792])
+
+        names.append("LHand")
+        times.append([0.1, 35.9])
+        keys.append([0.589631, 0.589631])
+
+        names.append("LShoulderPitch")
+        times.append([0.1, 35.9])
+        keys.append([1.56159, 1.56159])
+
+        names.append("LShoulderRoll")
+        times.append([0.1, 35.9])
+        keys.append([0.144194, 0.144194])
+
+        names.append("LWristYaw")
+        times.append([0.1, 35.9])
+        keys.append([0.0137641, 0.0137641])
+
+        names.append("RElbowRoll")
+        times.append([0.1, 35.9])
+        keys.append([0.523087, 0.523087])
+
+        names.append("RElbowYaw")
+        times.append([0.1, 35.9])
+        keys.append([1.23025, 1.23025])
+
+        names.append("RHand")
+        times.append([0.1, 35.9])
+        keys.append([0.589631, 0.589631])
+
+        names.append("RShoulderPitch")
+        times.append([0.1, 35.9])
+        keys.append([1.55852, 1.55852])
+
+        names.append("RShoulderRoll")
+        times.append([0.1, 35.9])
+        keys.append([-0.14266, -0.14266])
+
+        names.append("RWristYaw")
+        times.append([0.1, 35.9])
+        keys.append([0.00149202, 0.00149202])
+        try:
+            self.motion_service.angleInterpolation(names, keys, times, True)
+        except BaseException, err:
+            print err
