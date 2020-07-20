@@ -145,41 +145,41 @@ class Fios(Thread):
 		#path="/home/nao/.local/share/Explorer/2015-07-15T174625.158Z.explo"
         #loads the map from the directory where it was saved during exploration
         self.pepper.navigation_service.loadExploration(str(path))
-		guess =[0.,0.]
+	guess =[0.,0.]
         self.pepper.navigation_service.relocalizeInMap(guess)
-		print "Now it is relocated"
-		#time.sleep(10)
-		time.sleep(5)
+	print "Now it is relocated"
+	#time.sleep(10)
+	time.sleep(5)
         self.pepper.navigation_service.startLocalization()
         
         #the map made by the robot has associated a coordinate system relative to the robot. the place where the robot starts the movement is the [0.0,0.0,0.0]. we define this position as our home
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
         print "saved home position"
-		print "home="+str(self.home)
-		self.pepper.navigation_service.navigateToInMap([3.0,0.,0.])
-		print "arrive at"+str(self.pepper.navigation_service.getRobotPositionInMap())
-		self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
-		print "arrive at home"
-		self.pepper.say("Je retourne au point d'origine")
-		self.pepper.stand()
-		self.pepper.motion_service.moveTo(0.0,0.0,3.1415926/2)
+	print "home="+str(self.home)
+	self.pepper.navigation_service.navigateToInMap([3.0,0.,0.])
+	print "arrive at"+str(self.pepper.navigation_service.getRobotPositionInMap())
+	self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
+	print "arrive at home"
+	self.pepper.say("Je retourne au point d'origine")
+	self.pepper.stand()
+	self.pepper.motion_service.moveTo(0.0,0.0,3.1415926/2)
 
-		time.sleep(5)
-		self.pepper.navigation_service.navigateToInMap([0.,-4.0,0.])
-		print "arrive at (0,-4)"
-		self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
-		print "arrive at home"
-		self.pepper.say("Je retourne au point d'origine")
-		self.pepper.stand()
-		self.pepper.motion_service.moveTo(0.0,0.0,-3.1415926/2)
-		time.sleep(5)
-		self.pepper.navigation_service.navigateToInMap([0.,4.0,0.])
-		print "arrive at (0,4)"
-		self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
-		print "arrive at home"
-		self.pepper.say("C'est fini")	
-		result_map = self.pepper.navigation_service.getMetricalMap()
-		print"resolution="+str(result_map[0])
+	time.sleep(5)
+	self.pepper.navigation_service.navigateToInMap([0.,-4.0,0.])
+	print "arrive at (0,-4)"
+	self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
+	print "arrive at home"
+	self.pepper.say("Je retourne au point d'origine")
+	self.pepper.stand()
+	self.pepper.motion_service.moveTo(0.0,0.0,-3.1415926/2)
+	time.sleep(5)
+	self.pepper.navigation_service.navigateToInMap([0.,4.0,0.])
+	print "arrive at (0,4)"
+	self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
+	print "arrive at home"
+	self.pepper.say("C'est fini")	
+	result_map = self.pepper.navigation_service.getMetricalMap()
+	print"resolution="+str(result_map[0])
         map_width = result_map[1]
         map_height = result_map[2]
         img = np.array(result_map[4]).reshape(map_width, map_height)
@@ -190,8 +190,8 @@ class Fios(Thread):
     def def_pointSuivant(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
         self.pepper.navigation_service.stopLocalization()
-		#self.path="/home/nao/.local/share/Explorer/2015-07-20T170449.116Z.explo"
-		self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
+	#self.path="/home/nao/.local/share/Explorer/2015-07-20T170449.116Z.explo"
+	self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
         #loads the map from the directory where it was saved during exploration
         self.pepper.navigation_service.loadExploration(str(self.path))
         self.pepper.navigation_service.startLocalization()
@@ -247,28 +247,28 @@ class Fios(Thread):
         #then the robot starts moving autonomously to the target
         print "go to point a : "+str(self.a[0][0])+","+str(self.a[0][1])
         self.pepper.navigation_service.navigateToInMap([self.a[0][0],self.a[0][1],0.0])
-		print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point b : "+str(self.b[0][0])+","+str(self.b[0][1])
         self.pepper.navigation_service.navigateToInMap([self.b[0][0],self.b[0][1],0.0])
-		print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point c : "+str(self.c[0][0])+","+str(self.c[0][1])
         self.pepper.navigation_service.navigateToInMap([self.c[0][0],self.c[0][1],0.0])
-		print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point d : "+str(self.d[0][0])+","+str(self.d[0][1])
         self.pepper.navigation_service.navigateToInMap([self.d[0][0],self.d[0][1],0.0])
-		print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         print "go to point e : "+str(self.e[0][0])+","+str(self.e[0][1])
         self.pepper.navigation_service.navigateToInMap([self.e[0][0],self.e[0][1],0.0])
-		print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         
         #the robot then returns home to rest
         self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
-		print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
         self.pepper.posture_service.goToPosture("StandInit",0.5)
 
     def navigateToPoint(self):
         self.pepper.navigation_service.stopLocalization()
-		self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
+	self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
         self.pepper.navigation_service.loadExploration(str(self.path))
 
         self.pepper.navigation_service.startLocalization()
@@ -277,88 +277,87 @@ class Fios(Thread):
 		
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
         print "saved home position:"+str(self.home[0])
-		tours = 1
-		while tours > 0:
-			print "go to point a : "+str(0)+","+str(0)
-			self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-			print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			print "go to point b : "+str(3)+","+str(0)
-			self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
-			print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			print "go to point c : "+str(5)+","+str(0)
-			self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
-			print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	tours = 1
+	while tours > 0:
+		print "go to point a : "+str(0)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
+		print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point b : "+str(3)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
+		print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point c : "+str(5)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
+		print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 			#print "go to point d : "+str(7)+","+str(0)
 			#self.pepper.navigation_service.navigateToInMap([7.,0.,0.0])
 			#print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 			#print "go back to point c : "+str(5)+","+str(0)
 			#self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
 			#print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			print "go to point b1 : "+str(5)+","+str(1)
-			self.pepper.navigation_service.navigateToInMap([5.,1.,0.0])
-			print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point b1 : "+str(5)+","+str(1)
+		self.pepper.navigation_service.navigateToInMap([5.,1.,0.0])
+		print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 			#print "go to point c1 : "+str(0)+","+str(5)
 			#self.pepper.navigation_service.navigateToInMap([0.,5.,0.0])
 			#print "reached c1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			print "go to point d1 : "+str(5)+","+str(2)
-			self.pepper.navigation_service.navigateToInMap([5.,2.,0.0])
-			print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			print "go to point e1 : "+str(5)+","+str(0)
-			self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
-			print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			print "go to point d : "+str(2)+","+str(0)
-			self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
-			print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			print "go to point e : "+str(0)+","+str(0)
-			self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-			print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point d1 : "+str(5)+","+str(2)
+		self.pepper.navigation_service.navigateToInMap([5.,2.,0.0])
+		print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point e1 : "+str(5)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
+		print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point d : "+str(2)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
+		print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		print "go to point e : "+str(0)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
+		print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 			#the robot then returns home to rest
-			print "go to home : "+str(self.home[0][0])+","+str(self.home[0][1])
-				self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
-			print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			tours = tours - 1
-			self.pepper.posture_service.goToPosture("StandInit",0.5)
+		print "go to home : "+str(self.home[0][0])+","+str(self.home[0][1])
+		self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
+		print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		tours = tours - 1
+		self.pepper.posture_service.goToPosture("StandInit",0.5)
 		# self.arrive = True
 		# print "arrive="+str(self.arrive)
-    
-	def setDialog(self):
-	    self.pepper.dialog_service.setLanguage("French")
+
+    def setDialog(self):
+	self.pepper.dialog_service.setLanguage("French")
 	    # writing topics' qichat code as text strings (end-of-line characters are important!)
-	    topic_content_1 = ('topic: ~example_topic_content()\n'
-		               'language: frf\n'
-		               'concept:(aliments) [fruits poulet oeufs boeuf]\n'
-		               'proposal: veuillez me parler\n'
-		               'u: (Bonjour) Bonjour humain.\n'
-		               'u: (Je [veux "voudrais"] {quelques} _~aliments) Daccord! Vous devez vraiment aimer les $1 .\n'
-		               'u: (comment vas tu aujourd hui) Je vais bien merci, et toi?\n'
-		               'u: (ca va?) Super!\n'
-		               'u: (Pepper) Oui. Voua avez des questions?\n'
-		               'u: (Jai deja porter le masque) Bien!\n'
-		               'u: (quest-ce que tu mange?) Je suis un robot, je nai pas besoin de manger les aliments. Jai besoin de seulement electricite.\n'
-		               'u: (As-tu bien dormi?) Non! Tu as oublie de me couper et me charger!\n'
-		               'u: (posez-moi une question) aimez-vous le poisson? u1: (oui) ce est bon pour la sante u1: (non) je prefere la viande.\n'
-		               'u: (parlez des animaux) avez-vous un chat ou un chien? u1: (jai un chat) super u1: (jai un chien) je prefere un chat u1: (non) ah. dommage.\n'
-		               'u: (mon prenom est _*) Bonjour $name=$1\n'
-		               'u: (Quel est mon prenom?) ^first["votre prenom est $name" "je ne sais pas"] u1:(oui) rara u1: (non) OK ^clear(name)\n'
-		               'u: (Quelle est votre position?) ma position est ^break ^call(ALRobotPosture.getPosture()) c1:(_*) $1\n'
-		               'u: ([e:FrontTactilTouched e:MiddleTactilTouched e:RearTactilTouched]) Tu as touche ma tette\n'
-		               'u: ([e:faceDetected "Salut"]) Salut humain!\n')
+	topic_content_1 = ('topic: ~example_topic_content()\n'
+		           'language: frf\n'
+		           'concept:(aliments) [fruits poulet oeufs boeuf]\n'
+		           'proposal: veuillez me parler\n'
+		           'u: (Bonjour) Bonjour humain.\n'
+		           'u: (Je [veux "voudrais"] {quelques} _~aliments) Daccord! Vous devez vraiment aimer les $1 .\n'
+		           'u: (comment vas tu aujourd hui) Je vais bien merci, et toi?\n'
+		           'u: (ca va?) Super!\n'
+		           'u: (Pepper) Oui. Voua avez des questions?\n'
+		           'u: (Jai deja porter le masque) Bien!\n'
+		           'u: (quest-ce que tu mange?) Je suis un robot, je nai pas besoin de manger les aliments. Jai besoin de seulement electricite.\n'
+		           'u: (As-tu bien dormi?) Non! Tu as oublie de me couper et me charger!\n'
+		           'u: (posez-moi une question) aimez-vous le poisson? u1: (oui) ce est bon pour la sante u1: (non) je prefere la viande.\n'
+		           'u: (parlez des animaux) avez-vous un chat ou un chien? u1: (jai un chat) super u1: (jai un chien) je prefere un chat u1: (non) ah. dommage.\n'
+		           'u: (mon prenom est _*) Bonjour $name=$1\n'
+		           'u: (Quel est mon prenom?) ^first["votre prenom est $name" "je ne sais pas"] u1:(oui) rara u1: (non) OK ^clear(name)\n'
+		           'u: (Quelle est votre position?) ma position est ^break ^call(ALRobotPosture.getPosture()) c1:(_*) $1\n'
+		           'u: ([e:FrontTactilTouched e:MiddleTactilTouched e:RearTactilTouched]) Tu as touche ma tette\n'
+		           'u: ([e:faceDetected "Salut"]) Salut humain!\n')
 
-	    topic_content_2 = ('topic: ~dummy_topic()\n'
-		               'language: frf\n'
-		               'u:(test) [a b "c d" "e f g"]\n')
+	topic_content_2 = ('topic: ~dummy_topic()\n'
+		           'language: frf\n'
+		           'u:(test) [a b "c d" "e f g"]\n')
 
-	    # # Loading the topics directly as text strings
-	    topic_name_1 = self.pepper.dialog_service.loadTopicContent(topic_content_1)
-	    topic_name_2 = self.pepper.dialog_service.loadTopicContent(topic_content_2)
+	# # Loading the topics directly as text strings
+	topic_name_1 = self.pepper.dialog_service.loadTopicContent(topic_content_1)
+	topic_name_2 = self.pepper.dialog_service.loadTopicContent(topic_content_2)
 
-	    # # Activating the loaded topics
-	    self.pepper.dialog_service.activateTopic(topic_name_1)
-	    self.pepper.dialog_service.activateTopic(topic_name_2)
-
+	# # Activating the loaded topics
+	self.pepper.dialog_service.activateTopic(topic_name_1)
+	self.pepper.dialog_service.activateTopic(topic_name_2)
 	    # # Starting the dialog engine - we need to type an arbitrary string as the identifier
 	    # # We subscribe only ONCE, regardless of the number of topics we have activated
-	    self.pepper.dialog_service.subscribe('my_dialog_example')
+	self.pepper.dialog_service.subscribe('my_dialog_example')
 
     def run(self):
 		if self.val == 1:
@@ -367,7 +366,7 @@ class Fios(Thread):
 			self.setDialog()
 			key = ""
 		#self.pepper.autonomous_life_off()
-		#self.pepper.motion_service.wakeUp()
+			self.pepper.motion_service.wakeUp()
 			#self.def_pointSuivant()
 			#self.pepper.explore(4.0)
 			#while True:
@@ -395,7 +394,7 @@ class Fios(Thread):
 				self.pepper.dialog_service.unloadTopic(topic_name_2)
 			#self.def_point_show()
 			#self.steps_show()
-		if self.val == 2:
+		if self.val == 3:
 			self.arrive = 1
 			self.parole()
 

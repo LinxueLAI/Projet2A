@@ -612,14 +612,14 @@ class Pepper:
     def trackFace(self):
         face_found = False
         self.unsubscribe_effector()
-	    self.subscribe_camera("camera_top", 2, 30)
+	self.subscribe_camera("camera_top", 2, 30)
         self.posture_service.goToPosture("Stand", 0.5)
         self.say("Je cherche un visage.")
         proxy_name = "FaceDetection" + str(np.random)
-	    label=""
+	label=""
         print("[INFO]:looking for a face.")
-	    flow = True
-	    show = False
+	flow = True
+	show = False
         while not face_found and flow==True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -647,9 +647,9 @@ class Pepper:
                         print "Face Extra Infos :" + str(faceExtraInfo)
                         self.say("Salut,"+faceExtraInfo[2])
                     face_found = True
-	    	        image = self.get_camera_frame(show)#true?
-		            label = self.detect_image(image)
-		            break
+	    	    image = self.get_camera_frame(show)#true?
+		    label = self.detect_image(image)
+		    break
 
         self.tracker_service.registerTarget("Face", 0.15)
         self.tracker_service.setMode("Move")
@@ -666,12 +666,12 @@ class Pepper:
             label = detect_image(image)
             boucle=boucle+1
 
-	self.say("C'est bien, vous avez porter le masque.")
-	self.unsubscribe_effector()
-    self.stand()
-    self.face_detection_service.unsubscribe(proxy_name)	
-	self.unsubscribe_camera()
-	cv2.destroyAllWindows()
+    	self.say("C'est bien, vous avez porter le masque.")
+    	self.unsubscribe_effector()
+    	self.stand()
+    	self.face_detection_service.unsubscribe(proxy_name)	
+    	self.unsubscribe_camera()
+    	cv2.destroyAllWindows()
 
     def autonomous_life_off(self):
         self.autonomous_life_service.setState("disabled")
@@ -808,7 +808,7 @@ class Pepper:
                 # lists
                 faces.append(face)
                 locs.append((startX, startY, endX, endY))
-
+#811
         # only make a predictions if at least one face was detected
         if len(faces) > 0:
             # for faster inference we'll make batch predictions on *all*
@@ -819,11 +819,6 @@ class Pepper:
         # return a 2-tuple of the face locations and their corresponding
         # locations
         return (locs, preds)
-
-
-"""
-    mouvement
-"""
 
     def dance(self,motion_service):
         names = list()
