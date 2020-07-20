@@ -1,8 +1,0 @@
-<worktree>
-  <project src="myapp" />
-  <project src="." />
-  <project src="../../../.." />
-  <project src="myapp/myservice.py" />
-  <project src="foo" />
-  <project src="myapp/myapp.pml" />
-  </worktree>
