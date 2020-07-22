@@ -51,7 +51,7 @@ class Pepper:
         self.posture_service = self.session.service("ALRobotPosture")
         self.motion_service = self.session.service("ALMotion")
         self.tracker_service = self.session.service("ALTracker")
-        self.tts_service = self.session.service("ALTextToSpeech")#ALAnimatedSpeech/ALTextToSpeech
+        self.tts_service = self.session.service("ALAnimatedSpeech")#ALAnimatedSpeech/ALTextToSpeech
         self.tablet_service = self.session.service("ALTabletService")
         self.autonomous_life_service = self.session.service("ALAutonomousLife")
         self.navigation_service = self.session.service("ALNavigation")

@@ -285,18 +285,35 @@ class Fios(Thread):
 		print "go to point b : "+str(3)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
 		print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		
+		self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
+		time.sleep(1)
+		self.pepper.posture_service.goToPosture("StandInit",0.5)
+		self.pepper.wave(self.pepper.motion_service)
+
 		print "go to point c : "+str(5)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
 		print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
+		self.pepper.say("Nous pouvons danser ensemble!")
+		time.sleep(1)
+		self.pepper.posture_service.goToPosture("StandInit",0.5)
+		self.pepper.dance(self.pepper.motion_service)
 			#print "go to point d : "+str(7)+","+str(0)
 			#self.pepper.navigation_service.navigateToInMap([7.,0.,0.0])
 			#print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 			#print "go back to point c : "+str(5)+","+str(0)
 			#self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
-			#print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		#print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
 		print "go to point b1 : "+str(5)+","+str(1)
 		self.pepper.navigation_service.navigateToInMap([5.,1.,0.0])
 		print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+		self.pepper.say("Nous pouvons faire le gymnastique ensemble!")
+		time.sleep(1)
+		self.pepper.posture_service.goToPosture("StandInit",0.5)
+		self.pepper.taijiquan(self.pepper.motion_service)
+
 			#print "go to point c1 : "+str(0)+","+str(5)
 			#self.pepper.navigation_service.navigateToInMap([0.,5.,0.0])
 			#print "reached c1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
@@ -338,7 +355,7 @@ class Fios(Thread):
 		           'u: (As-tu bien dormi?) Non! Tu as oublie de me couper et me charger!\n'
 		           'u: (posez-moi une question) aimez-vous le poisson? u1: (oui) ce est bon pour la sante u1: (non) je prefere la viande.\n'
 		           'u: (parlez des animaux) avez-vous un chat ou un chien? u1: (jai un chat) super u1: (jai un chien) je prefere un chat u1: (non) ah. dommage.\n'
-		           'u: (mon prenom est _*) Bonjour $name=$1\n'
+		           'u: (mon prenom est _*) Bonjour $1\n'
 		           'u: (Quel est mon prenom?) ^first["votre prenom est $name" "je ne sais pas"] u1:(oui) rara u1: (non) OK ^clear(name)\n'
 		           'u: (Quelle est votre position?) ma position est ^break ^call(ALRobotPosture.getPosture()) c1:(_*) $1\n'
 		           'u: ([e:FrontTactilTouched e:MiddleTactilTouched e:RearTactilTouched]) Tu as touche ma tette\n'
@@ -349,12 +366,12 @@ class Fios(Thread):
 		           'u:(test) [a b "c d" "e f g"]\n')
 
 	# # Loading the topics directly as text strings
-	topic_name_1 = self.pepper.dialog_service.loadTopicContent(topic_content_1)
-	topic_name_2 = self.pepper.dialog_service.loadTopicContent(topic_content_2)
+	self.topic_name_1 = self.pepper.dialog_service.loadTopicContent(topic_content_1)
+	self.topic_name_2 = self.pepper.dialog_service.loadTopicContent(topic_content_2)
 
 	# # Activating the loaded topics
-	self.pepper.dialog_service.activateTopic(topic_name_1)
-	self.pepper.dialog_service.activateTopic(topic_name_2)
+	self.pepper.dialog_service.activateTopic(self.topic_name_1)
+	self.pepper.dialog_service.activateTopic(self.topic_name_2)
 	    # # Starting the dialog engine - we need to type an arbitrary string as the identifier
 	    # # We subscribe only ONCE, regardless of the number of topics we have activated
 	self.pepper.dialog_service.subscribe('my_dialog_example')
@@ -365,8 +382,9 @@ class Fios(Thread):
 			self.pepper.tablet_service.enableWifi()
 			self.setDialog()
 			key = ""
-		#self.pepper.autonomous_life_off()
-			self.pepper.motion_service.wakeUp()
+			#self.pepper.autonomous_life_off()
+			#self.pepper.motion_service.wakeUp()
+			time.sleep(5)
 			#self.def_pointSuivant()
 			#self.pepper.explore(4.0)
 			#while True:
@@ -385,16 +403,16 @@ class Fios(Thread):
 				self.pepper.dialog_service.unsubscribe('my_dialog_example')
 
 				# Deactivating all topics
-				self.pepper.dialog_service.deactivateTopic(topic_name_1)
-				self.pepper.dialog_service.deactivateTopic(topic_name_2)
+				self.pepper.dialog_service.deactivateTopic(self.topic_name_1)
+				self.pepper.dialog_service.deactivateTopic(self.topic_name_2)
 
 				# now that the dialog engine is stopped and there are no more activated topics,
 				# we can unload all topics and free the associated memory
-				self.pepper.dialog_service.unloadTopic(topic_name_1)
-				self.pepper.dialog_service.unloadTopic(topic_name_2)
+				self.pepper.dialog_service.unloadTopic(self.topic_name_1)
+				self.pepper.dialog_service.unloadTopic(self.topic_name_2)
 			#self.def_point_show()
 			#self.steps_show()
-		if self.val == 3:
+		if self.val == 2:
 			self.arrive = 1
 			self.parole()
 
