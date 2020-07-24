@@ -102,7 +102,9 @@ class Fios(Thread):
 				n = random.randint(0,100)
 				if self.label=="No Mask":
 					self.pepper.blink_eyes([255, 0, 0])
-					self.pepper.tablet_service.showImage("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
+					#self.pepper.tablet_service.showImage("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
+					s = self.pepper.tablet_service.showImage("/home/nao/video/masque.jpg")
+					print "s = "+str(s)
 					#self.pepper.tablet_service.hideImage()
 					nbHuman = nbHuman+1
 					if m < 2:
@@ -320,9 +322,21 @@ class Fios(Thread):
 		print "go to point d1 : "+str(5)+","+str(2)
 		self.pepper.navigation_service.navigateToInMap([5.,2.,0.0])
 		print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
+		self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
+		time.sleep(1)
+		self.pepper.posture_service.goToPosture("StandInit",0.5)
+		self.pepper.wavewithhand(self.pepper.motion_service)
+
 		print "go to point e1 : "+str(5)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
 		print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
+		self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
+		time.sleep(1)
+		self.pepper.posture_service.goToPosture("StandInit",0.5)
+		self.pepper.moveBody(self.pepper.motion_service)
+
 		print "go to point d : "+str(2)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
 		print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
@@ -347,18 +361,18 @@ class Fios(Thread):
 		           'proposal: veuillez me parler\n'
 		           'u: (Bonjour) Bonjour humain.\n'
 		           'u: (Je [veux "voudrais"] {quelques} _~aliments) Daccord! Vous devez vraiment aimer les $1 .\n'
-		           'u: (comment vas tu aujourd hui) Je vais bien merci, et toi?\n'
-		           'u: (ca va?) Super!\n'
-		           'u: (Pepper) Oui. Voua avez des questions?\n'
+		           'u: (comment vas tu) Je vais bien merci, et toi? u1: (sa va) super u1: (sa ne va pas) Prend bien soin de toi.\n'
+		           'u: (sa va?) Super!\n'
+		           'u: (Pepper) Oui. Vous avez des questions?\n'
 		           'u: (Jai deja porter le masque) Bien!\n'
-		           'u: (quest-ce que tu mange?) Je suis un robot, je nai pas besoin de manger les aliments. Jai besoin de seulement electricite.\n'
-		           'u: (As-tu bien dormi?) Non! Tu as oublie de me couper et me charger!\n'
-		           'u: (posez-moi une question) aimez-vous le poisson? u1: (oui) ce est bon pour la sante u1: (non) je prefere la viande.\n'
+		           'u: (quest-ce que tu mange?) Je suis un robot, je nai pas besoin de manger les aliments. Jai besoin de seulement electriciter.\n'
+		           'u: (As-tu bien dormi?) Non! Tu as oublier de me couper et me charger!\n'
+		           'u: (posez-moi une question) aimez-vous le poisson? u1: (oui) cest bon pour la santer u1: (non) je prefere la viande.\n'
 		           'u: (parlez des animaux) avez-vous un chat ou un chien? u1: (jai un chat) super u1: (jai un chien) je prefere un chat u1: (non) ah. dommage.\n'
 		           'u: (mon prenom est _*) Bonjour $1\n'
-		           'u: (Quel est mon prenom?) ^first["votre prenom est $name" "je ne sais pas"] u1:(oui) rara u1: (non) OK ^clear(name)\n'
+		           'u: (Quel est mon prenom?) ^first["votre prenom est $name" "je ne sais pas"] u1:(oui) rara u1: (non) OKay ^clear(name)\n'
 		           'u: (Quelle est votre position?) ma position est ^break ^call(ALRobotPosture.getPosture()) c1:(_*) $1\n'
-		           'u: ([e:FrontTactilTouched e:MiddleTactilTouched e:RearTactilTouched]) Tu as touche ma tette\n'
+		           'u: ([e:FrontTactilTouched e:MiddleTactilTouched e:RearTactilTouched]) Tu as touchet ma tette. \n'
 		           'u: ([e:faceDetected "Salut"]) Salut humain!\n')
 
 	topic_content_2 = ('topic: ~dummy_topic()\n'
@@ -395,7 +409,7 @@ class Fios(Thread):
 			try:
 				self.navigateToPoint()		
 				#self.steps()
-				#self.videoStream()
+				self.videoStream()
 				raw_input("\nSpeak to the robot using rules from both the activated topics. Press Enter when finished:")
 			finally:
 				print 'ok'
