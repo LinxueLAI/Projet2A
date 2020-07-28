@@ -21,12 +21,27 @@ def main(session):
 
         # Display a local image located in img folder in the root of the web server
         # The ip of the robot from the tablet is 198.18.0.1
-        tabletService.showImage("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
-        # tabletService.showImage("http://198.18.0.1/img/help_charger.png")
-        time.sleep(15)
+        # tabletService.showImage("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
+        # time.sleep(3)
 
-        # Hide the web view
+        # # Hide the web view
         tabletService.hideImage()
+
+        # tabletService.showImage("http://198.18.0.1/img/help_charger.png")
+        # time.sleep(3)
+        # tabletService.hideImage()
+
+        s = tabletService.showImage("http://198.18.0.1/TestImage/masque.jpg")
+        print str(s)
+        time.sleep(3)
+        tabletService.hideImage()
+
+        t = tabletService.showImage("./home/nao/video/masque2.jpg")
+        print str(t)
+        time.sleep(3)
+        tabletService.hideImage()
+
+
     except Exception, e:
         print "Error was: ", e
 
@@ -39,25 +54,26 @@ def main(session):
     #     # Play a video from the web and display the player
     #     # If you want to play a local video, the ip of the robot from the tablet is 198.18.0.1
     #     # Put the video in the HTML folder of your behavior
-    #     "http://198.18.0.1/apps/my_behavior/my_video.mp4"
+    #     # s = tabletService.playVideo("http://198.18.0.1/apps/TestImage/html/consigne.mp4")
+    #     # print str(s)
     #     # tabletService.playVideo("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
     #     # tabletService.playVideo("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
 
 
-    #     time.sleep(60)
+    #     # time.sleep(60)
 
-    #     # Display the time elapse / the total time of the video
-    #     print tabletService.getVideoPosition(), " / ", tabletService.getVideoLength()
+    #     # # Display the time elapse / the total time of the video
+    #     # print tabletService.getVideoPosition(), " / ", tabletService.getVideoLength()
 
-    #     # Pause the video
-    #     tabletService.pauseVideo()
+    #     # # Pause the video
+    #     # tabletService.pauseVideo()
 
-    #     time.sleep(3)
+    #     # time.sleep(3)
 
-    #     # resume the video
-    #     tabletService.resumeVideo()
+    #     # # resume the video
+    #     # tabletService.resumeVideo()
 
-    #     time.sleep(3)
+    #     # time.sleep(3)
 
     #     # stop the video and hide the player
     #     tabletService.stopVideo()

@@ -21,7 +21,7 @@ def main(session):
 
         # Display the index.html page of a behavior name j-tablet-browser
         # The index.html must be in a folder html in the behavior folder
-        tabletService.loadApplication("j-tablet-browser")
+        tabletService.loadApplication("TestImage")
         tabletService.showWebview()
 
         time.sleep(15)
