@@ -311,22 +311,15 @@ class Fios(Thread):
 		print "go to point b1 : "+str(5)+","+str(1)
 		self.pepper.navigation_service.navigateToInMap([5.,1.,0.0])
 		print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		self.pepper.say("Nous pouvons faire le gymnastique ensemble!")
-		time.sleep(1)
-		self.pepper.posture_service.goToPosture("StandInit",0.5)
-		self.pepper.taijiquan(self.pepper.motion_service)
 
-			#print "go to point c1 : "+str(0)+","+str(5)
-			#self.pepper.navigation_service.navigateToInMap([0.,5.,0.0])
-			#print "reached c1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 		print "go to point d1 : "+str(5)+","+str(2)
 		self.pepper.navigation_service.navigateToInMap([5.,2.,0.0])
 		print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 
-		self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
-		time.sleep(1)
-		self.pepper.posture_service.goToPosture("StandInit",0.5)
-		self.pepper.wavewithhand(self.pepper.motion_service)
+		#self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
+		#time.sleep(1)
+		#self.pepper.posture_service.goToPosture("StandInit",0.5)
+		#self.pepper.wavewithhand(self.pepper.motion_service)
 
 		print "go to point e1 : "+str(5)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
@@ -349,6 +342,7 @@ class Fios(Thread):
 		print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 		tours = tours - 1
 		self.pepper.posture_service.goToPosture("StandInit",0.5)
+		self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, "movement-90197c/behavior_1")
 		# self.arrive = True
 		# print "arrive="+str(self.arrive)
 
@@ -360,7 +354,7 @@ class Fios(Thread):
 		           'concept:(aliments) [fruits poulet oeufs boeuf]\n'
 		           'proposal: veuillez me parler\n'
 		           'u: (Bonjour) Bonjour humain.\n'
-		           'u: (Je [veux "voudrais"] {quelques} _~aliments) Daccord! Vous devez vraiment aimer les $1 .\n'
+		           #'u: (Je [veux "voudrais"] {quelques} _~aliments) Daccord! Vous devez vraiment aimer les $1 .\n'
 		           'u: (comment vas tu) Je vais bien merci, et toi? u1: (sa va) super u1: (sa ne va pas) Prend bien soin de toi.\n'
 		           'u: (sa va?) Super!\n'
 		           'u: (Pepper) Oui. Vous avez des questions?\n'
@@ -372,8 +366,8 @@ class Fios(Thread):
 		           'u: (mon prenom est _*) Bonjour $1\n'
 		           'u: (Quel est mon prenom?) ^first["votre prenom est $name" "je ne sais pas"] u1:(oui) rara u1: (non) OKay ^clear(name)\n'
 		           'u: (Quelle est votre position?) ma position est ^break ^call(ALRobotPosture.getPosture()) c1:(_*) $1\n'
-		           'u: ([e:FrontTactilTouched e:MiddleTactilTouched e:RearTactilTouched]) Tu as touchet ma tette. \n'
 		           'u: ([e:faceDetected "Salut"]) Salut humain!\n')
+#'u: ([e:FrontTactilTouched e:MiddleTactilTouched e:RearTactilTouched]) \n'
 
 	topic_content_2 = ('topic: ~dummy_topic()\n'
 		           'language: frf\n'
@@ -426,7 +420,7 @@ class Fios(Thread):
 				self.pepper.dialog_service.unloadTopic(self.topic_name_2)
 			#self.def_point_show()
 			#self.steps_show()
-		if self.val == 2:
+		if self.val == 3:
 			self.arrive = 1
 			self.parole()
 

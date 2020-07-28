@@ -65,6 +65,7 @@ class Pepper:
         self.speech_service = self.session.service("ALSpeechRecognition")
         self.animation_player_service = self.session.service("ALAnimationPlayer")
         self.dialog_service           = self.session.service("ALDialog")
+    	self.behavior_mng_service = self.session.service("ALBehaviorManager")
         # INITIALISING CAMERA POINTERS
         self.imageNo2d                = 1
         self.imageNo3d                = 1
@@ -78,6 +79,67 @@ class Pepper:
         self.motion_service.setStiffnesses(names, stiffnesses)
 	self.motion_service.setOrthogonalSecurityDistance(0.05)
         print("[INFO]: Robot is initialized at " + ip_address + ":" + str(port))
+    
+    def getBehaviors(self,behavior_mng_service):
+
+    	names = behavior_mng_service.getInstalledBehaviors()
+    	print "Behaviors on the robot:"
+    	print names
+
+    	names = behavior_mng_service.getRunningBehaviors()
+    	print "Running behaviors:"
+    	print names
+
+    def launchAndStopBehavior(self,behavior_mng_service, behavior_name):
+    	# Check that the behavior exists.
+    	if (behavior_mng_service.isBehaviorInstalled(behavior_name)):
+	    # Check that it is not already running.
+            if (not behavior_mng_service.isBehaviorRunning(behavior_name)):
+            # Launch behavior. This is a blocking call, use _async=True if you do not
+            # want to wait for the behavior to finish.
+            	behavior_mng_service.runBehavior(behavior_name, _async=True)
+            	time.sleep(10)
+            else:
+            	print "Behavior is already running."
+
+    	else:
+        	print "Behavior not found."
+    	return
+
+    	names = behavior_mng_service.getRunningBehaviors()
+    	print "Running behaviors:"
+    	print names
+
+    # Stop the behavior.
+    # if (behavior_mng_service.isBehaviorRunning(behavior_name)):
+    #     behavior_mng_service.stopBehavior(behavior_name)
+    #     time.sleep(1.0)
+    # else:
+    #     print "Behavior is already stopped."
+
+    # names = behavior_mng_service.getRunningBehaviors()
+    # print "Running behaviors:"
+    # print names
+
+    def defaultBehaviors(self,behavior_mng_service, behavior_name):
+    	# Get default behaviors.
+    	names = behavior_mng_service.getDefaultBehaviors()
+    	print "Default behaviors:"
+    	print names
+
+    	# Add behavior to default.
+    	behavior_mng_service.addDefaultBehavior(behavior_name)
+
+    	names = behavior_mng_service.getDefaultBehaviors()
+    	print "Default behaviors:"
+    	print names
+
+    	# Remove behavior from default.
+    	behavior_mng_service.removeDefaultBehavior(behavior_name)
+
+    	names = behavior_mng_service.getDefaultBehaviors()
+    	print "Default behaviors:"
+    	print names
 
     def _userArmArticular(self):
         # If needed to make hands move while moving.
