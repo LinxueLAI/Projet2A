@@ -51,7 +51,7 @@ class Pepper:
         self.posture_service = self.session.service("ALRobotPosture")
         self.motion_service = self.session.service("ALMotion")
         self.tracker_service = self.session.service("ALTracker")
-        self.tts_service = self.session.service("ALTextToSpeech")#ALAnimatedSpeech/ALTextToSpeech
+        self.tts_service = self.session.service("ALAnimatedSpeech")#ALAnimatedSpeech/ALTextToSpeech
         self.tablet_service = self.session.service("ALTabletService")
         self.autonomous_life_service = self.session.service("ALAutonomousLife")
         self.navigation_service = self.session.service("ALNavigation")
@@ -612,14 +612,14 @@ class Pepper:
     def trackFace(self):
         face_found = False
         self.unsubscribe_effector()
-	    self.subscribe_camera("camera_top", 2, 30)
+	self.subscribe_camera("camera_top", 2, 30)
         self.posture_service.goToPosture("Stand", 0.5)
         self.say("Je cherche un visage.")
         proxy_name = "FaceDetection" + str(np.random)
-	    label=""
+	label=""
         print("[INFO]:looking for a face.")
-	    flow = True
-	    show = False
+	flow = True
+	show = False
         while not face_found and flow==True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -647,9 +647,9 @@ class Pepper:
                         print "Face Extra Infos :" + str(faceExtraInfo)
                         self.say("Salut,"+faceExtraInfo[2])
                     face_found = True
-	    	        image = self.get_camera_frame(show)#true?
-		            label = self.detect_image(image)
-		            break
+	    	    image = self.get_camera_frame(show)#true?
+		    label = self.detect_image(image)
+		    break
 
         self.tracker_service.registerTarget("Face", 0.15)
         self.tracker_service.setMode("Move")
@@ -666,12 +666,12 @@ class Pepper:
             label = detect_image(image)
             boucle=boucle+1
 
-	self.say("C'est bien, vous avez porter le masque.")
-	self.unsubscribe_effector()
-    self.stand()
-    self.face_detection_service.unsubscribe(proxy_name)	
-	self.unsubscribe_camera()
-	cv2.destroyAllWindows()
+    	self.say("C'est bien, vous avez porter le masque.")
+    	self.unsubscribe_effector()
+    	self.stand()
+    	self.face_detection_service.unsubscribe(proxy_name)	
+    	self.unsubscribe_camera()
+    	cv2.destroyAllWindows()
 
     def autonomous_life_off(self):
         self.autonomous_life_service.setState("disabled")
@@ -808,7 +808,7 @@ class Pepper:
                 # lists
                 faces.append(face)
                 locs.append((startX, startY, endX, endY))
-
+#811
         # only make a predictions if at least one face was detected
         if len(faces) > 0:
             # for faster inference we'll make batch predictions on *all*
@@ -819,11 +819,6 @@ class Pepper:
         # return a 2-tuple of the face locations and their corresponding
         # locations
         return (locs, preds)
-
-
-"""
-    mouvement
-"""
 
     def dance(self,motion_service):
         names = list()
@@ -906,25 +901,25 @@ class Pepper:
         times = list()
         keys = list()
 
-        names.append("HeadPitch")
-        times.append([0.1, 11.9])
-        keys.append([-0.199418, -0.199418])
+        #names.append("HeadPitch")
+        #times.append([0.1, 11.9])
+        #keys.append([-0.199418, -0.199418])
 
-        names.append("HeadYaw")
-        times.append([0.1, 11.9])
-        keys.append([0, 0])
+        #names.append("HeadYaw")
+        #times.append([0.1, 11.9])
+        #keys.append([0, 0])
 
-        names.append("HipPitch")
-        times.append([0.1, 11.9])
-        keys.append([-0.0322137, -0.0322137])
+        #names.append("HipPitch")
+        #times.append([0.1, 11.9])
+        #keys.append([-0.0322137, -0.0322137])
 
-        names.append("HipRoll")
-        times.append([0.1, 11.9])
-        keys.append([-0.0107379, -0.0107379])
+        #names.append("HipRoll")
+        #times.append([0.1, 11.9])
+        #keys.append([-0.0107379, -0.0107379])
 
-        names.append("KneePitch")
-        times.append([0.1, 11.9])
-        keys.append([0.0107379, 0.0107379])
+        #names.append("KneePitch")
+        #times.append([0.1, 11.9])
+        #keys.append([0.0107379, 0.0107379])
 
         names.append("LElbowRoll")
         times.append([0.1, 0.9, 1.4, 1.9, 2.4, 2.9, 3.4, 3.9, 4.4, 4.9, 5.4, 5.9, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.9, 10.4, 10.9, 11.9])
@@ -950,29 +945,29 @@ class Pepper:
         times.append([0.1, 0.9, 1.4, 1.9, 2.4, 2.9, 3.4, 3.9, 4.4, 4.9, 5.4, 5.9, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.9, 10.4, 10.9, 11.9])
         keys.append([0.0137641, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 1.44339, 0.87441, 0.87441, 0.87441, 0.0137641])
 
-        names.append("RElbowRoll")
-        times.append([0.1, 11.9])
-        keys.append([0.523088, 0.523087])
+        #names.append("RElbowRoll")
+        #times.append([0.1, 11.9])
+        #keys.append([0.523088, 0.523087])
 
-        names.append("RElbowYaw")
-        times.append([0.1, 11.9])
-        keys.append([1.23025, 1.23025])
+        #names.append("RElbowYaw")
+        #times.append([0.1, 11.9])
+        #keys.append([1.23025, 1.23025])
 
-        names.append("RHand")
-        times.append([0.1, 11.9])
-        keys.append([0.589631, 0.589631])
+        #names.append("RHand")
+        #times.append([0.1, 11.9])
+        #keys.append([0.589631, 0.589631])
 
-        names.append("RShoulderPitch")
-        times.append([0.1, 11.9])
-        keys.append([1.55852, 1.55852])
+        #names.append("RShoulderPitch")
+        #times.append([0.1, 11.9])
+        #keys.append([1.55852, 1.55852])
 
-        names.append("RShoulderRoll")
-        times.append([0.1, 11.9])
-        keys.append([-0.14266, -0.14266])
+        #names.append("RShoulderRoll")
+        #times.append([0.1, 11.9])
+        #keys.append([-0.14266, -0.14266])
 
-        names.append("RWristYaw")
-        times.append([0.1, 11.9])
-        keys.append([0.00149202, 0.00149202])
+        #names.append("RWristYaw")
+        #times.append([0.1, 11.9])
+        #keys.append([0.00149202, 0.00149202])
         try:
         # uncomment the following line and modify the IP if you use this script outside Choregraphe.
         # motion = ALProxy("ALMotion", IP, 9559)
@@ -1065,25 +1060,25 @@ class Pepper:
         times = list()
         keys = list()
 
-        names.append("HeadPitch")
-        times.append([0.1, 46.1])
-        keys.append([-0.199418, -0.199418])
+        #names.append("HeadPitch")
+        #times.append([0.1, 46.1])
+        #keys.append([-0.199418, -0.199418])
 
-        names.append("HeadYaw")
-        times.append([0.1, 46.1])
-        keys.append([0, 0])
+        #names.append("HeadYaw")
+        #times.append([0.1, 46.1])
+        #keys.append([0, 0])
 
-        names.append("HipPitch")
-        times.append([0.1, 46.1])
-        keys.append([-0.0322137, -0.0322137])
+        #names.append("HipPitch")
+        #times.append([0.1, 46.1])
+        #keys.append([-0.0322137, -0.0322137])
 
         names.append("HipRoll")
         times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
         keys.append([-0.0107379, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.0107379])
 
-        names.append("KneePitch")
-        times.append([0.1, 46.1])
-        keys.append([0.0107379, 0.0107379])
+        #names.append("KneePitch")
+        #times.append([0.1, 46.1])
+        #keys.append([0.0107379, 0.0107379])
 
         names.append("LElbowRoll")
         times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 46.1])
@@ -1143,73 +1138,73 @@ class Pepper:
         times = list()
         keys = list()
 
-        names.append("HeadPitch")
-        times.append([0.01, 44.9])
-        keys.append([-0.199418, -0.199418])
+        #names.append("HeadPitch")
+        #times.append([0.01, 44.9])
+        #keys.append([-0.199418, -0.199418])
 
-        names.append("HeadYaw")
-        times.append([0.01, 44.9])
-        keys.append([0, 0])
+        #names.append("HeadYaw")
+        #times.append([0.01, 44.9])
+        #keys.append([0, 0])
 
-        names.append("HipPitch")
-        times.append([0.01, 44.9])
-        keys.append([-0.0322137, -0.0322137])
+        #names.append("HipPitch")
+        #times.append([0.01, 44.9])
+        #keys.append([-0.0322137, -0.0322137])
 
         names.append("HipRoll")
         times.append([0.01, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9, 37.9, 39.9, 41.9, 43.9, 44.9])
         keys.append([-0.0107379, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.0107379])
 
-        names.append("KneePitch")
-        times.append([0.01, 44.9])
-        keys.append([0.0107379, 0.0107379])
+        #names.append("KneePitch")
+        #times.append([0.01, 44.9])
+        #keys.append([0.0107379, 0.0107379])
 
-        names.append("LElbowRoll")
-        times.append([0.01, 44.9])
-        keys.append([-0.523087, -0.523087])
+        #names.append("LElbowRoll")
+        #times.append([0.01, 44.9])
+        #keys.append([-0.523087, -0.523087])
 
-        names.append("LElbowYaw")
-        times.append([0.01, 44.9])
-        keys.append([-1.23792, -1.23792])
+        #names.append("LElbowYaw")
+        #times.append([0.01, 44.9])
+        #keys.append([-1.23792, -1.23792])
 
-        names.append("LHand")
-        times.append([0.01, 44.9])
-        keys.append([0.589631, 0.589631])
+        #names.append("LHand")
+        #times.append([0.01, 44.9])
+        #keys.append([0.589631, 0.589631])
 
-        names.append("LShoulderPitch")
-        times.append([0.01, 44.9])
-        keys.append([1.56159, 1.56159])
+        #names.append("LShoulderPitch")
+        #times.append([0.01, 44.9])
+        #keys.append([1.56159, 1.56159])
 
-        names.append("LShoulderRoll")
-        times.append([0.01, 44.9])
-        keys.append([0.144194, 0.144194])
+        #names.append("LShoulderRoll")
+        #times.append([0.01, 44.9])
+        #keys.append([0.144194, 0.144194])
 
-        names.append("LWristYaw")
-        times.append([0.01, 44.9])
-        keys.append([0.0137641, 0.0137641])
+        #names.append("LWristYaw")
+        #times.append([0.01, 44.9])
+        #keys.append([0.0137641, 0.0137641])
 
-        names.append("RElbowRoll")
-        times.append([0.01, 44.9])
-        keys.append([0.523087, 0.523087])
+        #names.append("RElbowRoll")
+        #times.append([0.01, 44.9])
+        #keys.append([0.523087, 0.523087])
 
-        names.append("RElbowYaw")
-        times.append([0.01, 44.9])
-        keys.append([1.23025, 1.23025])
+        #names.append("RElbowYaw")
+        #times.append([0.01, 44.9])
+        #keys.append([1.23025, 1.23025])
 
-        names.append("RHand")
-        times.append([0.01, 44.9])
-        keys.append([0.589631, 0.589631])
+        #names.append("RHand")
+        #times.append([0.01, 44.9])
+        #keys.append([0.589631, 0.589631])
 
-        names.append("RShoulderPitch")
-        times.append([0.01, 44.9])
-        keys.append([1.55852, 1.55852])
+        #names.append("RShoulderPitch")
+        #times.append([0.01, 44.9])
+        #keys.append([1.55852, 1.55852])
 
-        names.append("RShoulderRoll")
-        times.append([0.01, 44.9])
-        keys.append([-0.14266, -0.14266])
+        #names.append("RShoulderRoll")
+        #times.append([0.01, 44.9])
+        #keys.append([-0.14266, -0.14266])
 
-        names.append("RWristYaw")
-        times.append([0.01, 44.9])
-        keys.append([0.00149202, 0.00149202])
+        #names.append("RWristYaw")
+        #times.append([0.01, 44.9])
+        #keys.append([0.00149202, 0.00149202])
 
         try:
             self.motion_service.angleInterpolation(names, keys, times, True)
@@ -1220,73 +1215,73 @@ class Pepper:
         times = list()
         keys = list()
 
-        names.append("HeadPitch")
-        times.append([0.1, 35.9])
-        keys.append([-0.199418, -0.199418])
+        #names.append("HeadPitch")
+        #times.append([0.1, 35.9])
+        #keys.append([-0.199418, -0.199418])
 
-        names.append("HeadYaw")
-        times.append([0.1, 35.9])
-        keys.append([0, 0])
+#        names.append("HeadYaw")
+ #       times.append([0.1, 35.9])
+  #      keys.append([0, 0])
 
-        names.append("HipPitch")
-        times.append([0.1, 35.9])
-        keys.append([-0.0322137, -0.0322137])
+   #     names.append("HipPitch")
+    #    times.append([0.1, 35.9])
+     #   keys.append([-0.0322137, -0.0322137])
 
         names.append("HipRoll")
         times.append([0.1, 1.9, 3.9, 5.9, 7.9, 9.9, 11.9, 13.9, 15.9, 17.9, 19.9, 21.9, 23.9, 25.9, 27.9, 29.9, 31.9, 33.9, 35.9])
         keys.append([-0.0107379, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, 0.349066, -0.349066, -0.0107379])
 
-        names.append("KneePitch")
-        times.append([0.1, 35.9])
-        keys.append([0.0107379, 0.0107379])
+      #  names.append("KneePitch")
+       # times.append([0.1, 35.9])
+        #keys.append([0.0107379, 0.0107379])
 
-        names.append("LElbowRoll")
-        times.append([0.1, 35.9])
-        keys.append([-0.523087, -0.523087])
+#        names.append("LElbowRoll")
+ #       times.append([0.1, 35.9])
+  #      keys.append([-0.523087, -0.523087])
 
-        names.append("LElbowYaw")
-        times.append([0.1, 35.9])
-        keys.append([-1.23792, -1.23792])
+#        names.append("LElbowYaw")
+ #       times.append([0.1, 35.9])
+  #      keys.append([-1.23792, -1.23792])
 
-        names.append("LHand")
-        times.append([0.1, 35.9])
-        keys.append([0.589631, 0.589631])
+   #     names.append("LHand")
+  #      times.append([0.1, 35.9])
+   #     keys.append([0.589631, 0.589631])
 
-        names.append("LShoulderPitch")
-        times.append([0.1, 35.9])
-        keys.append([1.56159, 1.56159])
+    #    names.append("LShoulderPitch")
+     #   times.append([0.1, 35.9])
+      #  keys.append([1.56159, 1.56159])
 
-        names.append("LShoulderRoll")
-        times.append([0.1, 35.9])
-        keys.append([0.144194, 0.144194])
+       # names.append("LShoulderRoll")
+       # times.append([0.1, 35.9])
+       # keys.append([0.144194, 0.144194])
 
-        names.append("LWristYaw")
-        times.append([0.1, 35.9])
-        keys.append([0.0137641, 0.0137641])
+       # names.append("LWristYaw")
+       # times.append([0.1, 35.9])
+       # keys.append([0.0137641, 0.0137641])
 
-        names.append("RElbowRoll")
-        times.append([0.1, 35.9])
-        keys.append([0.523087, 0.523087])
+        #names.append("RElbowRoll")
+        #times.append([0.1, 35.9])
+      #  keys.append([0.523087, 0.523087])
 
-        names.append("RElbowYaw")
-        times.append([0.1, 35.9])
-        keys.append([1.23025, 1.23025])
+       # names.append("RElbowYaw")
+       # times.append([0.1, 35.9])
+       # keys.append([1.23025, 1.23025])
 
-        names.append("RHand")
-        times.append([0.1, 35.9])
-        keys.append([0.589631, 0.589631])
+       # names.append("RHand")
+       # times.append([0.1, 35.9])
+       # keys.append([0.589631, 0.589631])
 
-        names.append("RShoulderPitch")
-        times.append([0.1, 35.9])
-        keys.append([1.55852, 1.55852])
+       # names.append("RShoulderPitch")
+       # times.append([0.1, 35.9])
+       # keys.append([1.55852, 1.55852])
 
-        names.append("RShoulderRoll")
-        times.append([0.1, 35.9])
-        keys.append([-0.14266, -0.14266])
+       # names.append("RShoulderRoll")
+       # times.append([0.1, 35.9])
+#        keys.append([-0.14266, -0.14266])
 
-        names.append("RWristYaw")
-        times.append([0.1, 35.9])
-        keys.append([0.00149202, 0.00149202])
+        #names.append("RWristYaw")
+        #times.append([0.1, 35.9])
+        #keys.append([0.00149202, 0.00149202])
         try:
             self.motion_service.angleInterpolation(names, keys, times, True)
         except BaseException, err:
