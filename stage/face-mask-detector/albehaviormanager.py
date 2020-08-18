@@ -18,7 +18,7 @@ def main(session, behavior_name):
     behavior_mng_service = session.service("ALBehaviorManager")
 
     getBehaviors(behavior_mng_service)
-    launchAndStopBehavior(behavior_mng_service, behavior_name)
+    launchAndStopBehavior(behavior_mng_service, 'quizsimple-ef922a/behavior_quiz')
     # defaultBehaviors(behavior_mng_service, behavior_name)
 
 def getBehaviors(behavior_mng_service):
@@ -26,9 +26,9 @@ def getBehaviors(behavior_mng_service):
     Know which behaviors are on the robot.
     """
 
-    names = behavior_mng_service.getInstalledBehaviors()
-    print "Behaviors on the robot:"
-    print names
+    # names = behavior_mng_service.getInstalledBehaviors()
+    # print "Behaviors on the robot:"
+    # print names
 
     names = behavior_mng_service.getRunningBehaviors()
     print "Running behaviors:"
@@ -44,8 +44,9 @@ def launchAndStopBehavior(behavior_mng_service, behavior_name):
         if (not behavior_mng_service.isBehaviorRunning(behavior_name)):
             # Launch behavior. This is a blocking call, use _async=True if you do not
             # want to wait for the behavior to finish.
-            behavior_mng_service.runBehavior(behavior_name, _async=True)
-            time.sleep(10)
+            # behavior_mng_service.runBehavior(behavior_name, _async=True)
+            # time.sleep(10)
+            behavior_mng_service.runBehavior(behavior_name)
         else:
             print "Behavior is already running."
 
