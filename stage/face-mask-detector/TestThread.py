@@ -100,13 +100,24 @@ class Fios(Thread):
 				cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 				m = random.randint(0,9)
 				n = random.randint(0,100)
+
 				if self.label=="No Mask":
+					cond.acquire()
+					print "people deteceted"
+					
+					#self.pepper.navigation_service.stopExploration()
+					#print "stop exploration"
+					#self.pepper.motion_service.stopMove()
+					#print "stop move"
+					self.pepper.getBehaviors(self.pepper.behavior_mng_service)
+        				self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'dialogmask-9c9568/behavior_1')
 					self.pepper.blink_eyes([255, 0, 0])
 					#self.pepper.tablet_service.showImage("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
 					s = self.pepper.tablet_service.showImage("/home/nao/video/masque.jpg")
 					print "s = "+str(s)
 					#self.pepper.tablet_service.hideImage()
 					nbHuman = nbHuman+1
+					"""
 					if m < 2:
 						self.pepper.say("Portez votre masque si vous plait.")
 					elif m < 4:
@@ -117,11 +128,16 @@ class Fios(Thread):
 						self.pepper.say("N'oubliez pas votre masque.")
 					else:
 						self.pepper.say("Bonjour,vous devez porter votre masque.")
+					"""
 					print "image output"
 					cv2.imwrite("./tmp/"+self.label+str(n)+".png", frame)
 					print"I've met "+str(nbHuman)+" peoples,there're "+str(nbMasque)+" masks"
 					time.sleep(2)
-				elif self.label=="Mask":		
+				elif self.label=="Mask":
+					#self.pepper.navigation_service.stopExploration()
+					#print "stop exploration"
+					#self.pepper.motion_service.stopMove()
+					#print "stop move"		
 					self.pepper.blink_eyes([0, 255, 0])
 					nbHuman = nbHuman+1
 					nbMasque = nbMasque+1
@@ -130,65 +146,12 @@ class Fios(Thread):
 					cv2.imwrite("./tmp/"+self.label+str(n)+".png", frame)
 					print"I've met "+str(nbHuman)+" peoples,there're "+str(nbMasque)+" masks"		
 					time.sleep(2)
+				else:
+					print "no people detected"
+					cond.notify()
 				self.pepper.blink_eyes([0, 0, 255])
 				self.label=""
 				key = ""
-
-    def def_point_show(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
-        #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
-        global a, b, c, d, e ,f, g, h
-        self.pepper.navigation_service.stopLocalization()
-        xfourpts = [0.0,2.0,2.0,0.0,0.0]
-        yfourpts = [0.0,0.0,-2.0,-2.0,0.0]
-        #two lists are created empty to later append the coordinates relative to X and Y of the coordinate system of the robot
-        xlstpoints=[]
-        ylstpoints=[]
-        path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"#path
-		#path="/home/nao/.local/share/Explorer/2015-07-15T174625.158Z.explo"
-        #loads the map from the directory where it was saved during exploration
-        self.pepper.navigation_service.loadExploration(str(path))
-	guess =[0.,0.]
-        self.pepper.navigation_service.relocalizeInMap(guess)
-	print "Now it is relocated"
-	#time.sleep(10)
-	time.sleep(5)
-        self.pepper.navigation_service.startLocalization()
-        
-        #the map made by the robot has associated a coordinate system relative to the robot. the place where the robot starts the movement is the [0.0,0.0,0.0]. we define this position as our home
-        self.home = self.pepper.navigation_service.getRobotPositionInMap()
-        print "saved home position"
-	print "home="+str(self.home)
-	self.pepper.navigation_service.navigateToInMap([3.0,0.,0.])
-	print "arrive at"+str(self.pepper.navigation_service.getRobotPositionInMap())
-	self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
-	print "arrive at home"
-	self.pepper.say("Je retourne au point d'origine")
-	self.pepper.stand()
-	self.pepper.motion_service.moveTo(0.0,0.0,3.1415926/2)
-
-	time.sleep(5)
-	self.pepper.navigation_service.navigateToInMap([0.,-4.0,0.])
-	print "arrive at (0,-4)"
-	self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
-	print "arrive at home"
-	self.pepper.say("Je retourne au point d'origine")
-	self.pepper.stand()
-	self.pepper.motion_service.moveTo(0.0,0.0,-3.1415926/2)
-	time.sleep(5)
-	self.pepper.navigation_service.navigateToInMap([0.,4.0,0.])
-	print "arrive at (0,4)"
-	self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.])
-	print "arrive at home"
-	self.pepper.say("C'est fini")	
-	result_map = self.pepper.navigation_service.getMetricalMap()
-	print"resolution="+str(result_map[0])
-        map_width = result_map[1]
-        map_height = result_map[2]
-        img = np.array(result_map[4]).reshape(map_width, map_height)
-        img = (100 - img) * 2.55 # from 0..100 to 255..0
-        img = np.array(img, np.uint8)
-        Image.frombuffer('L',  (map_width, map_height), img, 'raw', 'L', 0, 1).show()
-    
     def def_pointSuivant(self): #in def_point it is defined the movements needed in order to retrieve the desired coordinates of the map
         #if this funtion is to be run for any reason more then once in a row the location needs to be stopped 
         self.pepper.navigation_service.stopLocalization()
@@ -270,7 +233,8 @@ class Fios(Thread):
 
     def navigateToPoint(self):
         self.pepper.navigation_service.stopLocalization()
-	self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
+	#self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
+	self.path="/home/nao/.local/share/Explorer/2015-09-15T203432.132Z.explo"
         self.pepper.navigation_service.loadExploration(str(self.path))
 
         self.pepper.navigation_service.startLocalization()
@@ -279,7 +243,7 @@ class Fios(Thread):
 		
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
         print "saved home position:"+str(self.home[0])
-	tours = 1
+	tours = 5
 	while tours > 0:
 		print "go to point a : "+str(0)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
@@ -287,64 +251,13 @@ class Fios(Thread):
 		print "go to point b : "+str(3)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
 		print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		
-		self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
-		time.sleep(1)
-		self.pepper.posture_service.goToPosture("StandInit",0.5)
-		self.pepper.wave(self.pepper.motion_service)
 
-		print "go to point c : "+str(5)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
-		print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-		self.pepper.say("Nous pouvons danser ensemble!")
-		time.sleep(1)
-		self.pepper.posture_service.goToPosture("StandInit",0.5)
-		self.pepper.dance(self.pepper.motion_service)
-			#print "go to point d : "+str(7)+","+str(0)
-			#self.pepper.navigation_service.navigateToInMap([7.,0.,0.0])
-			#print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			#print "go back to point c : "+str(5)+","+str(0)
-			#self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
-		#print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-		print "go to point b1 : "+str(5)+","+str(1)
-		self.pepper.navigation_service.navigateToInMap([5.,1.,0.0])
-		print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-		print "go to point d1 : "+str(5)+","+str(2)
-		self.pepper.navigation_service.navigateToInMap([5.,2.,0.0])
-		print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-		#self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
-		#time.sleep(1)
-		#self.pepper.posture_service.goToPosture("StandInit",0.5)
-		#self.pepper.wavewithhand(self.pepper.motion_service)
-
-		print "go to point e1 : "+str(5)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
-		print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-		self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
-		time.sleep(1)
-		self.pepper.posture_service.goToPosture("StandInit",0.5)
-		self.pepper.moveBody(self.pepper.motion_service)
-
-		print "go to point d : "+str(2)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
-		print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		print "go to point e : "+str(0)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-		print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-			#the robot then returns home to rest
-		print "go to home : "+str(self.home[0][0])+","+str(self.home[0][1])
-		self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
-		print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 		tours = tours - 1
-		self.pepper.posture_service.goToPosture("StandInit",0.5)
-		self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, "movement-90197c/behavior_1")
+		#self.pepper.posture_service.goToPosture("StandInit",0.5)
+		#self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, "movement-90197c/behavior_1")
 		# self.arrive = True
 		# print "arrive="+str(self.arrive)
+	print "movement end"
 
     def setDialog(self):
 	self.pepper.dialog_service.setLanguage("French")
@@ -386,18 +299,40 @@ class Fios(Thread):
 
     def run(self):
 		if self.val == 1:
+			cond.acquire()
+			volunteer_found = False
+			self.pepper.unsubscribe_effector()
+			self.pepper.stand()
+			print "Je cherche un humain."
+			proxy_name = "FaceDetection" + str(np.random)
+			print("[INFO]: Pick a volunteer mode started")
+
+			if not volunteer_found:
+			    theta = np.random.randint(-10, 10)
+			    self.turn_around(theta)
+			    time.sleep(1)
+			    self.stop_moving()
+			    self.stand()
+			    self.face_detection_service.subscribe(proxy_name, 500, 0.0)
+			    for memory in range(5):
+				time.sleep(0.5)
+				output = self.memory_service.getData("FaceDetected")
+				print("...")
+				if output and isinstance(output, list) and len(output) >= 2:
+				    print("Face detected")
+				    volunteer_found = True
+
+			self.say("Je trouvais un humain! salut!")
+			self.stand()
+
+			
 			# Ensure that the tablet wifi is enable
 			self.pepper.tablet_service.enableWifi()
-			self.setDialog()
-			key = ""
+			#self.setDialog()
 			#self.pepper.autonomous_life_off()
 			#self.pepper.motion_service.wakeUp()
-			time.sleep(5)
-			#self.def_pointSuivant()
+			#time.sleep(5)
 			#self.pepper.explore(4.0)
-			#while True:
-			#	if key == ord("q"):
-			#		break
 			self.pepper.posture_service.goToPosture("StandInit",0.5)				
 			#self.pepper.remoteTerminal()
 			try:
@@ -408,22 +343,24 @@ class Fios(Thread):
 			finally:
 				print 'ok'
 				# stopping the dialog engine
-				self.pepper.dialog_service.unsubscribe('my_dialog_example')
+				#self.pepper.dialog_service.unsubscribe('my_dialog_example')
 
 				# Deactivating all topics
-				self.pepper.dialog_service.deactivateTopic(self.topic_name_1)
-				self.pepper.dialog_service.deactivateTopic(self.topic_name_2)
+				self.pepper.dialog_service.deactivateTopic('example_topic_content')
+				#self.pepper.dialog_service.deactivateTopic(self.topic_name_2)
 
 				# now that the dialog engine is stopped and there are no more activated topics,
 				# we can unload all topics and free the associated memory
-				self.pepper.dialog_service.unloadTopic(self.topic_name_1)
-				self.pepper.dialog_service.unloadTopic(self.topic_name_2)
+				self.pepper.dialog_service.unloadTopic('example_topic_content')
+				#self.pepper.dialog_service.unloadTopic(self.topic_name_2)
 			#self.def_point_show()
 			#self.steps_show()
-		if self.val == 3:
+		if self.val == 2:
+			time.sleep(2)
 			self.arrive = 1
 			self.parole()
 
+cond = threading.Condition()
 myThread1 = Fios(1)
 myThread1.setName('Thread 1')
 

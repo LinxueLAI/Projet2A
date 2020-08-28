@@ -138,7 +138,7 @@ class Fios(Thread):
         self.pepper.getBehaviors(self.pepper.behavior_mng_service)
 	print "maintenant le robot va commencer un petit talk......"
         self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'smalltalk-e525f6/behavior_1')
-	tours = 1
+	tours = 2
 	while tours > 0:
 		print "go to point a : "+str(0)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
@@ -146,40 +146,23 @@ class Fios(Thread):
 		print "go to point b : "+str(3)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
 		print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		self.pepper.getBehaviors(self.pepper.behavior_mng_service)
-        	print "maintenant le robot va faire des mouvements......"
-        	self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'troismovements-c012e8/behavior_1')
-		# self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
-		# time.sleep(1)
-		# self.pepper.posture_service.goToPosture("StandInit",0.5)
-		# self.pepper.wave(self.pepper.motion_service)
+		
+		#self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
+		#time.sleep(1)
+		#self.pepper.posture_service.goToPosture("StandInit",0.5)
+		#self.pepper.wave(self.pepper.motion_service)
+
 		print "go to point c : "+str(5)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
 		print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-		self.pepper.say("Nous pouvons danser ensemble!")
-		time.sleep(1)
-		self.pepper.posture_service.goToPosture("StandInit",0.5)
-		self.pepper.dance(self.pepper.motion_service)
-
-		print "go to point b1 : "+str(5)+","+str(1)
-		self.pepper.navigation_service.navigateToInMap([5.,1.,0.0])
-		print "reached b1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-		print "go to point d1 : "+str(5)+","+str(2)
-		self.pepper.navigation_service.navigateToInMap([5.,2.,0.0])
-		print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-		print "go to point e1 : "+str(5)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([5.,0.,0.0])
+		print "go to point e1 : "+str(3)+","+str(0)
+		self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
 		print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-        	self.pepper.getBehaviors(self.pepper.behavior_mng_service)
-        	print "maintenant le robot va montrer un quiz simple......"
-        	self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'quizsimple-ef922a/behavior_1')
-		# self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
-		# time.sleep(1)
-		# self.pepper.posture_service.goToPosture("StandInit",0.5)
-		# self.pepper.moveBody(self.pepper.motion_service)
+
+		#self.pepper.say("Pourriez-vous faire la meme mouvement comme moi?")
+		#time.sleep(1)
+		#self.pepper.posture_service.goToPosture("StandInit",0.5)
+		#self.pepper.moveBody(self.pepper.motion_service)
 
 		print "go to point d : "+str(2)+","+str(0)
 		self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
@@ -192,11 +175,11 @@ class Fios(Thread):
 		self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
 		print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 		tours = tours - 1
-        	self.pepper.getBehaviors(self.pepper.behavior_mng_service)
-        	print "maintenant le robot va montrer un quiz memoire......"
-        	self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'quizsimple-ef922a/behavior_quiz')
+		#self.pepper.posture_service.goToPosture("StandInit",0.5)
+		#self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, "movement-90197c/behavior_1")
 		# self.arrive = True
 		# print "arrive="+str(self.arrive)
+
 
     def run(self):
 	if self.val == 1:
@@ -212,12 +195,12 @@ class Fios(Thread):
 		try:
 			self.navigateToPoint()		
 			self.pepper.tablet_service.hideImage()
-			#self.videoStream()
+			self.videoStream()
 			raw_input("\nSpeak to the robot using rules from both the activated topics. Press Enter when finished:")
 		finally:
 			print 'ok'
 
-	if self.val == 3:
+	if self.val == 2:
 		self.arrive = 1
 		self.parole()
 
