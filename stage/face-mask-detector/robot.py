@@ -17,6 +17,7 @@ import gtts
 import playsound
 import subprocess
 # import dance
+import math
 import socket
 import paramiko
 from scp import SCPClient
@@ -77,6 +78,7 @@ class Pepper:
         self.speech_service = self.session.service("ALSpeechRecognition")
         self.dialog_service = self.session.service("ALDialog")
         self.audio_recorder = self.session.service("ALAudioRecorder")
+        self.behavior_mng_service = self.session.service("ALBehaviorManager")
 
         self.slam_map = None
         self.localization = None
@@ -149,7 +151,67 @@ class Pepper:
         """
         self.tts_service.say(text)
         print("[INFO]: Robot says: " + text)
-        
+
+    def getBehaviors(self,behavior_mng_service):
+
+    	# names = behavior_mng_service.getInstalledBehaviors()
+    	# print "Behaviors on the robot:"
+    	# print names
+
+    	names = behavior_mng_service.getRunningBehaviors()
+    	print "Running behaviors:"
+    	print names
+
+    def launchAndStopBehavior(self,behavior_mng_service, behavior_name):
+    	# Check that the behavior exists.
+    	if (behavior_mng_service.isBehaviorInstalled(behavior_name)):
+	    # Check that it is not already running.
+            if (not behavior_mng_service.isBehaviorRunning(behavior_name)):
+            # Launch behavior. This is a blocking call, use _async=True if you do not
+            # want to wait for the behavior to finish.
+            	behavior_mng_service.runBehavior(behavior_name)
+            	# time.sleep(10)
+            else:
+            	print "Behavior is already running."
+
+    	else:
+        	print "Behavior not found."
+    	return
+
+    	names = behavior_mng_service.getRunningBehaviors()
+    	print "Running behaviors:"
+    	print names
+
+    # Stop the behavior.
+    # if (behavior_mng_service.isBehaviorRunning(behavior_name)):
+    #     behavior_mng_service.stopBehavior(behavior_name)
+    #     time.sleep(1.0)
+    # else:
+    #     print "Behavior is already stopped."
+        names = behavior_mng_service.getRunningBehaviors()
+        print "Running behaviors:"
+        print names
+
+    def defaultBehaviors(self,behavior_mng_service, behavior_name):
+    	# Get default behaviors.
+    	names = behavior_mng_service.getDefaultBehaviors()
+    	print "Default behaviors:"
+    	print names
+
+    	# Add behavior to default.
+    	behavior_mng_service.addDefaultBehavior(behavior_name)
+
+    	names = behavior_mng_service.getDefaultBehaviors()
+    	print "Default behaviors:"
+    	print names
+
+    	# Remove behavior from default.
+    	behavior_mng_service.removeDefaultBehavior(behavior_name)
+
+    	names = behavior_mng_service.getDefaultBehaviors()
+    	print "Default behaviors:"
+    	print names
+
     def tablet_show_web(self, url):
         """
         Display a web page on robot's tablet. It also works for
@@ -255,7 +317,7 @@ class Pepper:
 
         try:
             while True:
-                time.sleep(1)
+                time.sleep(10)
         except KeyboardInterrupt:
             print("[INFO]: Interrupted by user")
             self.say("Stopping to track a " + object_name)
@@ -629,42 +691,51 @@ class Pepper:
         self.unsubscribe_effector()
         self.stand()
         # self.say("I need a volunteer.")
-        self.say("Je cherche un humain.")
+        # self.say("Je cherche un humain.")
+        print "le robot cherche un humain."
 
         proxy_name = "FaceDetection" + str(numpy.random)
 
         print("[INFO]: Pick a volunteer mode started")
-
+        tmp =  1
+        theta = 0.5
         while not volunteer_found:
-            wait = numpy.random.randint(500, 1500) / 1000
-            theta = numpy.random.randint(-10, 10)
-            self.turn_around(theta)
-            time.sleep(wait)
-            self.stop_moving()
-            self.stand()
+            if tmp%3 == 1:
+                theta = 0.5
+            elif tmp%3 == 3:
+                theta = -0.5
+            else:
+                theta = 0
+            # wait = numpy.random.randint(500, 1500) / 1000
+            # self.turn_around(theta)
+            self.motion_service.setAngles("HeadYaw", theta, 0.2)
+            time.sleep(1)
+            # time.sleep(1)
+            # self.stop_moving()
+            # self.stand()
             self.face_detection_service.subscribe(proxy_name, 500, 0.0)
             for memory in range(5):
-                time.sleep(0.5)
+                time.sleep(0.2)
                 output = self.memory_service.getData("FaceDetected")
-                print("...")
+                # print "output="+str(output)
+                # print("...")
                 if output and isinstance(output, list) and len(output) >= 2:
                     print("Face detected")
                     volunteer_found = True
-
-        self.say("Je trouvais un humain! salut!")
-        self.stand()
+            tmp=tmp+1
+        # self.say("Salut!")
+        # self.stand()
         try:
             self.tracker_service.registerTarget("Face", 0.15)
             self.tracker_service.setMode("Move")
             self.tracker_service.track("Face")
-            self.tracker_service.setEffector("RArm")
-            self.get_face_properties()
-
+            # self.tracker_service.setEffector("RArm")
+            # self.get_face_properties()
         finally:
-            time.sleep(2)
+            time.sleep(1)
             self.unsubscribe_effector()
             self.stand()
-            print "test1"
+            # print "test1"
             self.face_detection_service.unsubscribe(proxy_name)
 
     def searchFace(self):
@@ -740,77 +811,69 @@ class Pepper:
     def trackFace(self):
         face_found = False
         self.unsubscribe_effector()
-	self.subscribe_camera("camera_top", 2, 30)
-        self.posture_service.goToPosture("Stand", 0.5)
-        self.say("Je detecte un visage.")
+	    # self.subscribe_camera("camera_top", 2, 30)
+        # tour = 1
+        # if tour == 1:
+        #     self.posture_service.goToPosture("Stand", 0.5)
+        #     tour = tour+1
         proxy_name = "FaceDetection" + str(numpy.random)
-
-        print("[INFO]:looking for a face.")
-	flow = True
-	show = False
+        self.motion_service.setAngles("HeadPitch", -0.1, 0.2)
+        print "[INFO]:looking for a face."
+        flow = True
         while not face_found and flow==True:
-	    if cv2.waitKey(1) & 0xFF == ord('q'):
-		break
-
+            # self.motion_service.setAngles("HeadPitch", -0.1, 0.2)
             self.face_detection_service.subscribe(proxy_name, 500, 0.0)
             for memory in range(5):
-                time.sleep(0.5)
+                # time.sleep(0.5)
                 output = self.memory_service.getData("FaceDetected")
-                print("...")
+                # print("...")
                 if output and isinstance(output, list) and len(output) >= 2:
                     print("Face detected")
-		    print("timestamp=")
-		    print(output[0])
-		    print("faceinfoArray=")
-		    print(output[1])
-                    #print("FaceShapInfo=")
-		    faceInfoArray=output[1]
-		    for j in range( len(faceInfoArray)-1 ):
-                	faceInfo = faceInfoArray[j]
-                	# First Field = Shape info.
-                	faceShapeInfo = faceInfo[0]
-                	# Second Field = Extra info (empty for now).
-                	faceExtraInfo = faceInfo[1]
-                	print "Face Infos :  alpha %.3f - beta %.3f" % (faceShapeInfo[1], faceShapeInfo[2])
-                	print "Face Infos :  width %.3f - height %.3f" % (faceShapeInfo[3], faceShapeInfo[4])
-                	print "Face Extra Infos :" + str(faceExtraInfo)
-			self.say("Salut,"+faceExtraInfo[2])
-                    face_found = True
-	    	    image = self.get_camera_frame(show)#true?
-	    	    cv2.imshow("frame", image)
-		    cv2.imwrite("./tmp/Output.png", image)
-		    break
-		    print("Output.png is saved.")
+                    faceInfoArray=output[1]
+                    for j in range( len(faceInfoArray)-1 ):
+                        faceInfo = faceInfoArray[j]
+                        # First Field = Shape info.
+                        faceShapeInfo = faceInfo[0]
+                        # Second Field = Extra info (empty for now).
+                        faceExtraInfo = faceInfo[1]
+                        # print "Face Infos :  alpha %.3f - beta %.3f" % (faceShapeInfo[1], faceShapeInfo[2])
+                        print "Face Infos :  width %.3f - height %.3f" % (faceShapeInfo[3], faceShapeInfo[4])
+                        faceSize = faceShapeInfo[3]*faceShapeInfo[4]*100
+                        print "the size of face is "+ str(faceSize)
+                        alpha = 1 #param alpha
+                        D = 2*math.exp(-alpha*faceSize) #distance entre le robot et humain
+                        print "D = "+ str(D)
+                        K=0.5
+                        Dzero = 0.7
+                        Vr = K*(D-Dzero)
+                        if (D-Dzero)>=0.05:
+                            # text = "Suivez-moi, je vous attends."
+                            # self.say(text)
+                            self.move_forward(Vr/2)
+                        elif (abs((D-Dzero))<0.05 and (D-Dzero)>=0):#abs ou |(D-Dzero)|<0.1
+                            Vr = 0
+                            self.move_forward(Vr)
+                        elif (D-Dzero)<0:
+                            self.move_forward(Vr)
+                            return True   
+                        print "Vr = "+ str(Vr)
+                        print "D-Dzero = "+str(D-Dzero)
+                        # if(Vr<0):
+                        #     Vr=Vr/2
 
-        self.tracker_service.registerTarget("Face", 0.15)
-        self.tracker_service.setMode("Move")
-        self.tracker_service.track("Face")
-	self.say("Veuillez attendre si vous plait.")
-	label=""
-	#label = detect_image()
-	#print "label="+str(label)
-	boucle = 1
-	while not detect_image(label)=="Mask":
-		print "boucle="+str(boucle)
-		text="Portez le masque si vous plait."
-		if boucle == 1:		
-			self.say(text)
-		#time.sleep(2)
-		image = self.get_camera_frame(show)#true?
-      	        cv2.imshow("frame", image)
-		cv2.imwrite("./tmp/Output.png", image)
-		#self.say("Veuillez attendre si vous plait.")
-		#label = detect_image()
-		boucle=boucle+1
-
-	self.say("C'est bien, vous avez porter le masque.")
-	self.unsubscribe_effector()
-        self.stand()
-       	self.face_detection_service.unsubscribe(proxy_name)	
-	self.unsubscribe_camera()
-	cv2.destroyAllWindows()
-
-
+                        # elif D<Dzero:
+                        #     text = "Veuillez gardez la distance sociale."
+                        #     self.say(text)
+                        # else:
+                        #     text = ""
+                        #     pass
+                            # text = "Salut,"+faceExtraInfo[2]
+                            # self.say(text)
+                        # face_found = True
+                        # print str(text)
+        # self.move_forward(0.0)
+       	self.face_detection_service.unsubscribe(proxy_name)
+        return True	
 
     @staticmethod
     def share_localhost(folder):
