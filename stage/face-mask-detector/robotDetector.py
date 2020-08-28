@@ -82,9 +82,9 @@ class Pepper:
     
     def getBehaviors(self,behavior_mng_service):
 
-    	names = behavior_mng_service.getInstalledBehaviors()
-    	print "Behaviors on the robot:"
-    	print names
+    	#names = behavior_mng_service.getInstalledBehaviors()
+    	#print "Behaviors on the robot:"
+    	#print names
 
     	names = behavior_mng_service.getRunningBehaviors()
     	print "Running behaviors:"
@@ -97,11 +97,13 @@ class Pepper:
             if (not behavior_mng_service.isBehaviorRunning(behavior_name)):
             # Launch behavior. This is a blocking call, use _async=True if you do not
             # want to wait for the behavior to finish.
-            	behavior_mng_service.runBehavior(behavior_name, _async=True)
+            	behavior_mng_service.runBehavior(behavior_name)
             	time.sleep(10)
             else:
-            	print "Behavior is already running."
-
+            	print "Behavior is already running.So we relaunch it."
+		behavior_mng_service.stopBehavior(behavior_name)
+    		time.sleep(1.0)
+		behavior_mng_service.runBehavior(behavior_name)
     	else:
         	print "Behavior not found."
     	return
@@ -670,6 +672,36 @@ class Pepper:
 
         """
         self.led_service.fadeRGB('AllLeds', rgb[0], rgb[1], rgb[2], 1.0)
+
+    def pick_a_volunteer(self):
+
+        volunteer_found = False
+        self.unsubscribe_effector()
+        self.stand()
+        # self.say("I need a volunteer.")
+        self.say("Je cherche un humain.")
+
+        proxy_name = "FaceDetection" + str(numpy.random)
+
+        print("[INFO]: Pick a volunteer mode started")
+
+        while not volunteer_found:
+            theta = numpy.random.randint(-10, 10)
+            self.turn_around(theta)
+            time.sleep(1)
+            self.stop_moving()
+            self.stand()
+            self.face_detection_service.subscribe(proxy_name, 500, 0.0)
+            for memory in range(5):
+                time.sleep(0.5)
+                output = self.memory_service.getData("FaceDetected")
+                print("...")
+                if output and isinstance(output, list) and len(output) >= 2:
+                    print("Face detected")
+                    volunteer_found = True
+
+        self.say("Je trouvais un humain! salut!")
+        self.stand()
 
     def trackFace(self):
         face_found = False
