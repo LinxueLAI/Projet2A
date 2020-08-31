@@ -674,34 +674,59 @@ class Pepper:
         self.led_service.fadeRGB('AllLeds', rgb[0], rgb[1], rgb[2], 1.0)
 
     def pick_a_volunteer(self):
-
         volunteer_found = False
         self.unsubscribe_effector()
         self.stand()
         # self.say("I need a volunteer.")
-        self.say("Je cherche un humain.")
-
+        # self.say("Je cherche un humain.")
         proxy_name = "FaceDetection" + str(numpy.random)
 
         print("[INFO]: Pick a volunteer mode started")
-
-        while not volunteer_found:
-            theta = numpy.random.randint(-10, 10)
-            self.turn_around(theta)
+        tmp =  1
+        theta = 0.5
+        time_start = time.time()
+        time_used = 0
+        while not volunteer_found and time_used<15:
+            if tmp%3 == 1:
+                theta = 0.5
+            elif tmp%3 == 3:
+                theta = -0.5
+            else:
+                theta = 0
+            # wait = numpy.random.randint(500, 1500) / 1000
+            # self.turn_around(theta)
+            self.motion_service.setAngles("HeadYaw", theta, 0.2)
             time.sleep(1)
-            self.stop_moving()
-            self.stand()
+            # time.sleep(1)
+            # self.stop_moving()
+            # self.stand()
             self.face_detection_service.subscribe(proxy_name, 500, 0.0)
             for memory in range(5):
-                time.sleep(0.5)
+                time.sleep(0.2)
                 output = self.memory_service.getData("FaceDetected")
-                print("...")
+                # print "output="+str(output)
+                # print("...")
                 if output and isinstance(output, list) and len(output) >= 2:
                     print("Face detected")
                     volunteer_found = True
-
-        self.say("Je trouvais un humain! salut!")
+            tmp = tmp+1
+            time_used = time.time()-time_start
+            print "time used = "+str(time_used)
+            # theta = numpy.random.randint(-10, 10)
+            # self.turn_around(theta)
+            # time.sleep(1)
+            # self.stop_moving()
+            # self.stand()
+            # self.face_detection_service.subscribe(proxy_name, 500, 0.0)
+            # for memory in range(5):
+            #     time.sleep(0.5)
+            #     output = self.memory_service.getData("FaceDetected")
+            #     print("...")
+            #     if output and isinstance(output, list) and len(output) >= 2:
+            #         print("Face detected")
+            #         volunteer_found = True
         self.stand()
+        return volunteer_found
 
     def trackFace(self):
         face_found = False
