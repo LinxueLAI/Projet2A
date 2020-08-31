@@ -26,57 +26,12 @@ class Interaction:
         # self.pepper.getBehaviors(self.pepper.behavior_mng_service)
         print "maintenant le robot va commencer un petit talk......"
         self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)
-        self.pepper.motion_service.moveTo(0.0,0.0,3.1415926)
-        self.pepper.pick_a_volunteer()
-        self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'smalltalk-e525f6/behavior_1')
+        #self.pepper.motion_service.moveTo(0.0,0.0,3.1415926)
+        #self.pepper.pick_a_volunteer()
+        #self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'smalltalk-e525f6/behavior_1')
         time.sleep(2)
         tours = 1
         while tours > 0:
-            print "go to point a : "+str(0)+","+str(0)
-            self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-            print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-            print "go to point b : "+str(2)+","+str(0)
-            self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
-            print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-            # self.pepper.motion_service.moveTo(0.0,0.0,3.1415926/2)
-            # print "turned left"
-            print "go to point c : "+str(3)+","+str(0)
-            self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
-            print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-            
-            self.pepper.getBehaviors(self.pepper.behavior_mng_service)
-            print "maintenant le robot va faire des mouvements......"
-            self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)
-            self.pepper.pick_a_volunteer()
-            self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'troismovements-c012e8/behavior_1')
-            time.sleep(2)
-
-            print "go to point c : "+str(3)+","+str(2)
-            self.pepper.navigation_service.navigateToInMap([3.,2.,0.0])
-            print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-            self.pepper.posture_service.goToPosture("StandInit",0.5)
-
-            print "maintenant le robot va montrer un quiz simple......"
-            self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)
-            self.pepper.pick_a_volunteer()
-            self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'quizsimple-ef922a/behavior_1')
-            time.sleep(2)
-
-            print "go to point d : "+str(0)+","+str(2)
-            self.pepper.navigation_service.navigateToInMap([0.,2.,0.0])
-            print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
-            # self.pepper.getBehaviors(self.pepper.behavior_mng_service)
-            print "maintenant le robot va montrer un quiz memoire......"
-            self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)
-            self.pepper.pick_a_volunteer()
-            self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'quizsimple-ef922a/behavior_quiz')
-            time.sleep(2)
-
-            print "go to point e : "+str(0)+","+str(0)
-            self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-            print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
 
             self.suivezMoi()
             # self.pepper.motion_service.moveTo(0.0,0.0,-3.1415926)# -: turn to right; +: turn to left
