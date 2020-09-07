@@ -4,3 +4,14 @@ path:"/home/nao/.local/share/Explorer/2015-07-20T170449.116Z.explo"
 
 40m
 path:"/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
+
+5 metres: "/home/nao/.local/share/Explorer/2015-09-15T203432.132Z.explo"
+10 metres: "/home/nao/.local/share/Explorer/2015-09-15T204802.650Z.explo"
+
+dehors:
+7 metres:  "/home/nao/.local/share/Explorer/2015-09-15T214851.595Z.explo"
+
+dans le couloir, rayon = 15 metres: 
+"/home/nao/.local/share/Explorer/2015-09-28T210020.730Z.explo"
+
+

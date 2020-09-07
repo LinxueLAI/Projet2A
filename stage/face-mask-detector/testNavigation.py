@@ -672,8 +672,8 @@ print(pepper.motion.getTangentialSecurityDistance())#0.1
 # path = pepper.navigation.saveExploration()
 # print "Exploration saved at path: \"" + path + "\""
 # pepper.navigation.stopExploration()
-# pepper.explore(7.0)#radius
-# print "exploration is finished"
+pepper.explore(15.0)#radius
+print "exploration is finished"
 
 # pepper.motion.setAngles("HeadPitch", -0.1, 0.2)
 # print "1"
@@ -721,8 +721,8 @@ print(pepper.motion.getTangentialSecurityDistance())#0.1
 # pepper.navigation.navigateToInMap([0.5,0.0,0.0])
 # pepper.navigation.navigateToInMap([1.0,0.0,0.0])
 
-pepper.def_pointSuivant()
-pepper.steps()
+# pepper.def_pointSuivant()
+# pepper.steps()
 
 # pepper.def_point_show()
 # pepper.steps_show()

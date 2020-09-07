@@ -12,7 +12,6 @@ class Fios(Thread):
 	Thread.__init__(self)
 	self.val=val
 	self.pepper = Pepper("192.168.2.169", 9559)
-	#self.pepper.autonomous_life_off()
 	self.prototxtPath = os.path.sep.join(["face_detector", "deploy.prototxt"])
 	self.weightsPath = os.path.sep.join(["face_detector","res10_300x300_ssd_iter_140000.caffemodel"])
 	self.faceNet = cv2.dnn.readNet(self.prototxtPath, self.weightsPath)
@@ -25,74 +24,60 @@ class Fios(Thread):
 
     def videoStream(self):
 		print("[INFO] loading face detector model...")
-
 		# initialize the video stream and allow the camera sensor to warm up
 		print("[INFO] starting video stream...")
-
 		# loop over the frames from the video stream
 		while True:
 			frame = self.pepper.get_camera_frame(show=False)
-
 			# detect faces in the frame and determine if they are wearing a face mask or not
 			(locs, preds) = self.pepper.detect_and_predict_mask(frame, self.faceNet, self.maskNet)
-
 			# loop over the detected face locations and their corresponding
 			# locations
 			for (box, pred) in zip(locs, preds):
 				# unpack the bounding box and predictions
 				(startX, startY, endX, endY) = box
 				(mask, withoutMask) = pred
-
 				# determine the class label and color we'll use to draw
 				# the bounding box and text
 				self.label = "Mask" if mask > withoutMask else "No Mask"
 				color = (0, 255, 0) if self.label == "Mask" else (0, 0, 255)
-				
 				# include the probability in the label
 				label1 = "{}: {:.2f}%".format(self.label, max(mask, withoutMask) * 100)
-
 				# display the label and bounding box rectangle on the output
 				# frame
 				cv2.putText(frame, label1, (startX, startY - 10),
 					cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
 				cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
-
 			# show the output frame
 			cv2.imshow("Frame", frame)
 			self.label=""
 			key = cv2.waitKey(1) & 0xFF
-
 			# if the `q` key was pressed, break from the loop
 			if key == ord("q"):
 				break
-
 		# do a bit of cleanup
 		cv2.destroyAllWindows()
 
     def parole(self):
 		nbHuman = 0
 		nbMasque = 0
-
 		while self.arrive == 1:
+			# activer le mode "track face", le robot va suivre la visage de humain qu'il a vu.
 			self.pepper.tracker_service.registerTarget("Face", 0.15)
 			self.pepper.tracker_service.setMode("Move")
 			self.pepper.tracker_service.track("Face")
 			frame = self.pepper.get_camera_frame(show=False)
 			(locs, preds) = self.pepper.detect_and_predict_mask(frame, self.faceNet, self.maskNet)
-
 			for (box, pred) in zip(locs, preds):
 				# unpack the bounding box and predictions
 				(startX, startY, endX, endY) = box
 				(mask, withoutMask) = pred
-
 				# determine the class label and color we'll use to draw
 				# the bounding box and text
 				self.label = "Mask" if mask > withoutMask else "No Mask"
 				color = (0, 255, 0) if self.label == "Mask" else (0, 0, 255)
-				
 				# include the probability in the label
 				label1 = "{}: {:.2f}%".format(self.label, max(mask, withoutMask) * 100)
-
 				# display the label and bounding box rectangle on the output
 				# frame
 				cv2.putText(frame, label1, (startX, startY - 10),
@@ -100,24 +85,20 @@ class Fios(Thread):
 				cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 				m = random.randint(0,9)
 				n = random.randint(0,100)
-
 				if self.label=="No Mask":
-					cond.acquire()
 					print "people deteceted"
-					
 					#self.pepper.navigation_service.stopExploration()
 					#print "stop exploration"
 					#self.pepper.motion_service.stopMove()
 					#print "stop move"
-					self.pepper.getBehaviors(self.pepper.behavior_mng_service)
-        				self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'dialogmask-9c9568/behavior_1')
+					# self.pepper.getBehaviors(self.pepper.behavior_mng_service)
+        				# self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'dialogmask-9c9568/behavior_1')
 					self.pepper.blink_eyes([255, 0, 0])
 					#self.pepper.tablet_service.showImage("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
 					s = self.pepper.tablet_service.showImage("/home/nao/video/masque.jpg")
 					print "s = "+str(s)
 					#self.pepper.tablet_service.hideImage()
 					nbHuman = nbHuman+1
-					"""
 					if m < 2:
 						self.pepper.say("Portez votre masque si vous plait.")
 					elif m < 4:
@@ -128,7 +109,6 @@ class Fios(Thread):
 						self.pepper.say("N'oubliez pas votre masque.")
 					else:
 						self.pepper.say("Bonjour,vous devez porter votre masque.")
-					"""
 					print "image output"
 					cv2.imwrite("./tmp/"+self.label+str(n)+".png", frame)
 					print"I've met "+str(nbHuman)+" peoples,there're "+str(nbMasque)+" masks"
@@ -236,9 +216,7 @@ class Fios(Thread):
 	#self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
 	self.path="/home/nao/.local/share/Explorer/2015-09-15T203432.132Z.explo"
         self.pepper.navigation_service.loadExploration(str(self.path))
-
         self.pepper.navigation_service.startLocalization()
-
         time.sleep(5)
 		
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
@@ -299,7 +277,6 @@ class Fios(Thread):
 
     def run(self):
 		if self.val == 1:
-			cond.acquire()
 			volunteer_found = False
 			self.pepper.unsubscribe_effector()
 			self.pepper.stand()
@@ -324,35 +301,26 @@ class Fios(Thread):
 
 			self.say("Je trouvais un humain! salut!")
 			self.stand()
-
-			
 			# Ensure that the tablet wifi is enable
 			self.pepper.tablet_service.enableWifi()
 			#self.setDialog()
 			#self.pepper.autonomous_life_off()
 			#self.pepper.motion_service.wakeUp()
-			#time.sleep(5)
-			#self.pepper.explore(4.0)
 			self.pepper.posture_service.goToPosture("StandInit",0.5)				
 			#self.pepper.remoteTerminal()
 			try:
 				self.navigateToPoint()		
-				#self.steps()
 				self.videoStream()
 				raw_input("\nSpeak to the robot using rules from both the activated topics. Press Enter when finished:")
 			finally:
 				print 'ok'
-				# stopping the dialog engine
-				#self.pepper.dialog_service.unsubscribe('my_dialog_example')
-
-				# Deactivating all topics
-				self.pepper.dialog_service.deactivateTopic('example_topic_content')
-				#self.pepper.dialog_service.deactivateTopic(self.topic_name_2)
-
-				# now that the dialog engine is stopped and there are no more activated topics,
-				# we can unload all topics and free the associated memory
-				self.pepper.dialog_service.unloadTopic('example_topic_content')
-				#self.pepper.dialog_service.unloadTopic(self.topic_name_2)
+				# # stopping the dialog engine
+				# self.pepper.dialog_service.unsubscribe('my_dialog_example')
+				# # Deactivating all topics
+				# self.pepper.dialog_service.deactivateTopic('example_topic_content')
+				# # now that the dialog engine is stopped and there are no more activated topics,
+				# # we can unload all topics and free the associated memory
+				# self.pepper.dialog_service.unloadTopic('example_topic_content')
 			#self.def_point_show()
 			#self.steps_show()
 		if self.val == 2:
@@ -360,15 +328,12 @@ class Fios(Thread):
 			self.arrive = 1
 			self.parole()
 
-cond = threading.Condition()
 myThread1 = Fios(1)
 myThread1.setName('Thread 1')
 
 myThread2 = Fios(2)
 myThread2.setName('Thread 2')
 myThread2.daemon = True
-
-
 
 print "Initiating Threads"
 myThread1.start()
