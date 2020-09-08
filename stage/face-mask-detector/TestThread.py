@@ -4,6 +4,7 @@ from threading import Thread
 import sys
 import almath
 import motion
+from numpy import array
 import random
 # -*- encoding: UTF-8 -*-
 
@@ -94,9 +95,9 @@ class Fios(Thread):
 					# self.pepper.getBehaviors(self.pepper.behavior_mng_service)
         				# self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, 'dialogmask-9c9568/behavior_1')
 					self.pepper.blink_eyes([255, 0, 0])
-					#self.pepper.tablet_service.showImage("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
-					s = self.pepper.tablet_service.showImage("/home/nao/video/masque.jpg")
-					print "s = "+str(s)
+					self.pepper.tablet_service.showImage("https://png.pngtree.com/png-clipart/20200401/original/pngtree-hand-drawn-2019-new-corona-virus-wearing-a-mask-figure-png-image_5329325.jpg")
+					#s = self.pepper.tablet_service.showImage("/home/nao/video/masque.jpg")
+					#print "s = "+str(s)
 					#self.pepper.tablet_service.hideImage()
 					nbHuman = nbHuman+1
 					if m < 2:
@@ -214,28 +215,47 @@ class Fios(Thread):
     def navigateToPoint(self):
         self.pepper.navigation_service.stopLocalization()
 	#self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
-	self.path="/home/nao/.local/share/Explorer/2015-09-15T203432.132Z.explo"
+	#self.path="/home/nao/.local/share/Explorer/2015-09-15T203432.132Z.explo"
+	self.path = "/home/nao/.local/share/Explorer/2015-09-28T210020.730Z.explo"
         self.pepper.navigation_service.loadExploration(str(self.path))
         self.pepper.navigation_service.startLocalization()
         time.sleep(5)
 		
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
         print "saved home position:"+str(self.home[0])
-	tours = 5
-	while tours > 0:
-		print "go to point a : "+str(0)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-		print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		print "go to point b : "+str(3)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
-		print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+	p=array([[0.0,0.0],[2.0,0.0],[4.0,0.0],[6.0,0.0],[8.0,0.0],[10.0,0.0],[8.0,0.0],[6.0,0.0],[4.0,0.0],[2.0,0.0]])#right -   ;left +
 
-		tours = tours - 1
-		#self.pepper.posture_service.goToPosture("StandInit",0.5)
-		#self.pepper.launchAndStopBehavior(self.pepper.behavior_mng_service, "movement-90197c/behavior_1")
-		# self.arrive = True
-		# print "arrive="+str(self.arrive)
+        i = 0
+        self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)
+        while i<10:
+            print "i = "+str(i)
+            initPosition = almath.Pose2D(self.pepper.motion_service.getRobotPosition(True))
+            print "initPos = "+str(initPosition)
+            targetDistance = almath.Pose2D(int(p[i][0]),int(p[i][1]),0.0)
+            expectedEndPosition = initPosition * targetDistance
+            # pepper.motion_service.moveTo(3.0,0.0,0.0)
+            print "go to point"+str(p[i][0])+","+str(p[i][1])
+            self.pepper.navigation_service.navigateToInMap([int(p[i][0]),int(p[i][1]),0.0])
+            print "position in map = "+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+            realEndPosition = almath.Pose2D(self.pepper.motion_service.getRobotPosition(False))
+            positionError = realEndPosition.diff(expectedEndPosition)
+            print "positionError= "+str(positionError)
+            positionError.theta = almath.modulo2PI(positionError.theta)
+
+            if(positionError.x>0.3) or (positionError.y>0.3):
+                print "continuer atteindre le point "+str(p[i][0])+","+str(p[i][1])
+                self.pepper.navigation_service.navigateToInMap([int(p[i][0]),int(p[i][1]),0.0])
+                print "position in map = "+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
+            print "now position = "+str(almath.Pose2D(self.pepper.motion_service.getRobotPosition(False)))
+            print "arrive at "+str(p[i][0])+","+str(p[i][1])
+            i = i + 1
+
 	print "movement end"
+	print "go to point home : "+str(0)+","+str(0)
+	self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
+	print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
 
     def setDialog(self):
 	self.pepper.dialog_service.setLanguage("French")
@@ -277,30 +297,7 @@ class Fios(Thread):
 
     def run(self):
 		if self.val == 1:
-			volunteer_found = False
-			self.pepper.unsubscribe_effector()
-			self.pepper.stand()
-			print "Je cherche un humain."
-			proxy_name = "FaceDetection" + str(np.random)
-			print("[INFO]: Pick a volunteer mode started")
-
-			if not volunteer_found:
-			    theta = np.random.randint(-10, 10)
-			    self.turn_around(theta)
-			    time.sleep(1)
-			    self.stop_moving()
-			    self.stand()
-			    self.face_detection_service.subscribe(proxy_name, 500, 0.0)
-			    for memory in range(5):
-				time.sleep(0.5)
-				output = self.memory_service.getData("FaceDetected")
-				print("...")
-				if output and isinstance(output, list) and len(output) >= 2:
-				    print("Face detected")
-				    volunteer_found = True
-
-			self.say("Je trouvais un humain! salut!")
-			self.stand()
+			#self.stand()
 			# Ensure that the tablet wifi is enable
 			self.pepper.tablet_service.enableWifi()
 			#self.setDialog()
@@ -309,7 +306,8 @@ class Fios(Thread):
 			self.pepper.posture_service.goToPosture("StandInit",0.5)				
 			#self.pepper.remoteTerminal()
 			try:
-				self.navigateToPoint()		
+				self.navigateToPoint()
+				self.pepper.say("La demonstration est terminer.")		
 				self.videoStream()
 				raw_input("\nSpeak to the robot using rules from both the activated topics. Press Enter when finished:")
 			finally:

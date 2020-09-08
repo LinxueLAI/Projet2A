@@ -16,7 +16,7 @@ class Interaction:
     
     def navigateToPoint(self):
         self.pepper.navigation_service.stopLocalization()
-        # self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
+        #self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
         # self.path = "/home/nao/.local/share/Explorer/2015-09-18T183258.341Z.explo"
         self.path = "/home/nao/.local/share/Explorer/2015-09-18T210133.604Z.explo"
         self.pepper.navigation_service.loadExploration(str(self.path))
@@ -46,7 +46,7 @@ class Interaction:
             print "go to point c : "+str(3)+","+str(0)
             self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
             print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-            
+            self.pepper.motion_service.moveTo(0.0,0.0,3.1415926)
             self.pepper.getBehaviors(self.pepper.behavior_mng_service)
             print "maintenant le robot va faire des mouvements......"
             self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)
@@ -58,7 +58,7 @@ class Interaction:
             self.pepper.navigation_service.navigateToInMap([3.,2.,0.0])
             print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
             self.pepper.posture_service.goToPosture("StandInit",0.5)
-
+	    self.pepper.motion_service.moveTo(0.0,0.0,3.1415926)
             print "maintenant le robot va montrer un quiz simple......"
             self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)
             self.pepper.pick_a_volunteer()
@@ -68,7 +68,7 @@ class Interaction:
             print "go to point d : "+str(0)+","+str(2)
             self.pepper.navigation_service.navigateToInMap([0.,2.,0.0])
             print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-
+	    self.pepper.motion_service.moveTo(0.0,0.0,3.1415926)
             # self.pepper.getBehaviors(self.pepper.behavior_mng_service)
             print "maintenant le robot va montrer un quiz memoire......"
             self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)

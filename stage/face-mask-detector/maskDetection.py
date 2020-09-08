@@ -5,6 +5,7 @@ import sys
 import almath
 import motion
 import random
+from numpy import array
 # -*- encoding: UTF-8 -*-
 
 class Fios(Thread):
@@ -217,7 +218,8 @@ class Fios(Thread):
     def navigateToPoint(self):
         self.pepper.navigation_service.stopLocalization()
 	#self.path="/home/nao/.local/share/Explorer/2015-06-19T204141.485Z.explo"
-	self.path = "/home/nao/.local/share/Explorer/2015-09-18T210133.604Z.explo"
+	#self.path = "/home/nao/.local/share/Explorer/2015-09-18T210133.604Z.explo"
+	self.path = "/home/nao/.local/share/Explorer/2015-09-28T210020.730Z.explo"
         self.pepper.navigation_service.loadExploration(str(self.path))
 
         self.pepper.navigation_service.startLocalization()
@@ -225,43 +227,36 @@ class Fios(Thread):
         # time.sleep(5)
 	self.time_start = time.time()
         self.home = self.pepper.navigation_service.getRobotPositionInMap()
-	tours = 2
-	while tours > 0:
-		print "go to point a : "+str(0)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-		print "reached a:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		print "go to point b : "+str(1)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([1.,0.,0.0])
-		print "reached b:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		self.detection()
-		print "go to point c : "+str(2)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
-		print "reached c:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		self.detection()
-		print "go to point e1 : "+str(3)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([3.,0.,0.0])
-		print "reached e1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		self.detection()
-        	print "go to point d : "+str(2)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([2.,0.,0.0])
-		print "reached d:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		self.detection()
-		print "go to point d1 : "+str(1)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([1.,0.,0.0])
-		print "reached d1:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		self.detection()
-		print "go to point e : "+str(0)+","+str(0)
-		self.pepper.navigation_service.navigateToInMap([0.,0.,0.0])
-		print "reached e:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		#if self.pepper.pick_a_volunteer() ==True:
-		self.detection()
-		#else:
-		    #print "times up"
-			#the robot then returns home to rest
-		print "go to home : "+str(self.home[0][0])+","+str(self.home[0][1])
-		self.pepper.navigation_service.navigateToInMap([self.home[0][0],self.home[0][1],0.0])
-		print "reached home:"+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
-		tours = tours - 1
+        print "saved home position:"+str(self.home[0])
+	p=array([[0.0,0.0],[2.0,0.0],[4.0,0.0],[6.0,0.0],[8.0,0.0],[10.0,0.0],[8.0,0.0],[6.0,0.0],[4.0,0.0],[2.0,0.0]])#right -   ;left +
+
+        i = 0
+        self.pepper.motion_service.setAngles("HeadPitch", -0.1, 0.2)
+        while i<10:
+            print "i = "+str(i)
+            initPosition = almath.Pose2D(self.pepper.motion_service.getRobotPosition(True))
+            print "initPos = "+str(initPosition)
+            targetDistance = almath.Pose2D(int(p[i][0]),int(p[i][1]),0.0)
+            expectedEndPosition = initPosition * targetDistance
+            # pepper.motion_service.moveTo(3.0,0.0,0.0)
+            print "go to point"+str(p[i][0])+","+str(p[i][1])
+            self.pepper.navigation_service.navigateToInMap([int(p[i][0]),int(p[i][1]),0.0])
+	    self.detection()
+            print "position in map = "+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+            realEndPosition = almath.Pose2D(self.pepper.motion_service.getRobotPosition(False))
+            positionError = realEndPosition.diff(expectedEndPosition)
+            print "positionError= "+str(positionError)
+            positionError.theta = almath.modulo2PI(positionError.theta)
+
+            if(positionError.x>0.3) or (positionError.y>0.3):
+                print "continuer atteindre le point "+str(p[i][0])+","+str(p[i][1])
+                self.pepper.navigation_service.navigateToInMap([int(p[i][0]),int(p[i][1]),0.0])
+                print "position in map = "+str(self.pepper.navigation_service.getRobotPositionInMap()[0])
+
+            print "now position = "+str(almath.Pose2D(self.pepper.motion_service.getRobotPosition(False)))
+            print "arrive at "+str(p[i][0])+","+str(p[i][1])
+            i = i + 1
+
 	self.time_used = time.time()-self.time_start
 	self.pepper.say("J'ai fini ma demonstration dans "+str(round(self.time_used,3))+" seconds. J'ai rencontrer "+str(self.nbHuman)+"personnes. Il y a "+str(self.nbMasque)+" masques.")
 

@@ -58,7 +58,10 @@ class Interaction:
                     print "time_Cost = "+str(time.time()-time_2)
                     arrived = self.pepper.trackFace()
                 # print "out"
-                self.pepper.say("Suivez-moi.")
+                if i%2==0:
+			self.pepper.say("Suivez-moi s'il vous plait.")
+		else:
+			self.pepper.say("C'est bien! continuer!")
                 self.pepper.move_forward(0.0)
             except KeyboardInterrupt:
                 self.pepper.move_forward(0.0)
