@@ -1,0 +1,9 @@
+export PYTHONPATH=${PYTHONPATH}=:/pynaoqi-python2.7-2.5.7.1-linux64/lib/python2.7/site-packages
+PATH=$PATH:$HOME/.local/bin
+
+
+python2 albehaviormanager.py --behavior_name "movement-90197c/behavior_1"
+python2 albehaviormanager.py --behavior_name "ttablette-cf4635/behavior_1"
+
+python2 albehaviormanager.py --behavior_name "smalltalk-e525f6/behavior_1"
+
