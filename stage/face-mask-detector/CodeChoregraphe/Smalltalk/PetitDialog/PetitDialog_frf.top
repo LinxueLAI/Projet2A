@@ -1,0 +1,35 @@
+topic: ~PetitDialog()
+language: frf
+
+concept: (couleur) [jaune orange vert violet noir blanc gris turquoise rose rouge bleu]
+concept: (animal) [lion tigre ours cheval éléphant singe dauphin poisson tortue lézard oiseau]
+concept: (salutation) [bonjour Salut Coucou Pepper]
+concept: (prénom)[Pascal Patrick Linxue Quentin Hugo Lucas Alexis]
+concept: (finir) [salut merci ok d'accord bonsoir "bonne journée"]
+u: (e:FrontTactilTouched) \style=joyful\ ~salutation \pau=200\^nextProposal
+u: (e:FaceDetected "Salut")\style=joyful\ ~salutation \pau=200\^nextProposal
+u:(quiter) $onStopped=1
+
+proposal: %BEGIN \style=neutral\ quel est votre prénom?
+    u1:(mon prénom est _~prénom) Salut, $name=$1 Enchanté $1 ! ^nextProposal
+
+# Capture User Input and save to a variable
+proposal: %SMALLTALK %FAVCOLOR quel est votre couleur préféré? 
+    u1: (_[rouge bleu]) ^first[$1==1 "Les roses sont rouges!" "les violettes sont bleues"] $favcolor=$1 ^nextProposal
+    u1: (_~couleur) wow, $1 est un bon choix! $favcolor=$1 ^nextProposal 
+
+proposal: %SMALLTALK %ANIMALS quel est votre animal préféré?
+    u1:(_~animal) $favanimal=$1 ^first["$favanimal==éléphant \vct=120\ moi aussi! \vct=100\ \pau=200\ \style=joyful\ saviez-vous que les éléphants ont vraiment bons souvenirs??" "le $favanimal ?"]  c'est très cool!\style=neutral\ ^nextProposal  
+
+proposal: %SMALLTALK %APP \pau=200\ Pouvez-vous faire des mouvements avec moi?
+    u1:(Oui) super!$onEvent=1
+    u1:(Non) D'accord. Mais c'est bien de faire des exercices souvent!
+        u2:(Au revoir)\style=joyful\ Au revoir mon amis!\pau=200\ Bonne journée!$onStopped=1
+        u2:(~finir) Au revoir! \style=neutral\ C'était sympa de vous parler et d'apprendre que votre couleur préférée est $favcolor ,et que votre animal préféré est $favanimal ! \pau=200\ Bonne journée!$onStopped=1 
+
+u:(parlez d'animaux) ok! ^gotoReactivate(ANIMALS)
+u:(quel est votre animal préféré) Probablement des humains! ^gotoReactivate(ANIMALS)
+u:(quel est votre couleur préférée) bonne question! blanc! ^gotoReactivate(FAVCOLOR)
+u:(Quel temps fait-il?) Je ne sais pas. Je ne peux pas aller dehors ^gotoReactivate(WEATHER)
+u:(retour) ^gotoReactivate(BEGIN)
+u:(au revoir) Au revoir $name C'était sympa de vous parler et d'apprendre que votre couleur préférée est $favcolor ,et que votre animal préféré est $favanimal !$onStopped=1

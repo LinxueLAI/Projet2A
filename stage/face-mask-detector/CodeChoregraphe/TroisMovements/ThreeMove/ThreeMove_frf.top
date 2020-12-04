@@ -1,0 +1,20 @@
+topic: ~ThreeMove()
+language: frf
+concept: (salutation) [bonjour Salut Coucou]
+concept: (prénom)[Pascal Patrick Linxue Quentin Hugo Lucas Alexis]
+concept: (finir) [merci ok d'accord bonsoir "bonne journée"]
+concept: (goodbye) [revoir "au revoir"]
+u: (e:onStart) \style=joyful\ ~salutation \pau=200\^nextProposal
+u:(quiter) $onStopped=1
+
+proposal: %SMALLTALK %APP \pau=200\ Pouvez-vous faire des mouvements avec moi?
+    u1:(Oui) super! D'abord, bougez votre bras droit.\pau=200\ ^start(movement03-554d20/behavior_1) ^wait(movement03-554d20/behavior_1) \pau=200\ Ensuite, bougez votre bras gauche.\pau=200\ ^start(mouvement04-0b5bd6/behavior_1) ^wait(mouvement04-0b5bd6/behavior_1) \pau=200\ Ensuite, bougez les deux bras.\pau=200\ ^start(movement05-c60b80/behavior_1) ^wait(movement05-c60b80/behavior_1) \pau=200\ Et puis, Veuillez bouger le haut de votre corps.\pau=200\ ^start(movement01-530642/behavior_1) ^wait(movement01-530642/behavior_1)
+\pau=200\Enfin,veuillez bouger votre corps et les bras!\pau=200\ ^start(movement02-596d52/behavior_1) ^wait(movement02-596d52/behavior_1) \style= joyful\ Vous voyez ? c'est très simple!
+    u1:(Non) D'accord. Mais c'est bien de faire des exercices souvent! Je peux faire un exemple pour vous! D'abord, bougez votre bras droit.\pau=200\  ^start(movement03-554d20/behavior_1) ^wait(movement03-554d20/behavior_1) !\pau=200\ Ensuite, bougez votre bras gauche.\pau=200\ ^start(mouvement04-0b5bd6/behavior_1) ^wait(mouvement04-0b5bd6/behavior_1)
+\pau=200\ Ensuite, bougez les deux bras.\pau=200\ ^start(movement05-c60b80/behavior_1) ^wait(movement05-c60b80/behavior_1) \pau=200\ Et puis, Veuillez bouger le haut de votre corps.\pau=200\ ^start(movement01-530642/behavior_1) ^wait(movement01-530642/behavior_1)
+\pau=200\Enfin,veuillez bouger votre corps et les bras!\pau=200\ ^start(movement02-596d52/behavior_1) ^wait(movement02-596d52/behavior_1) \style= joyful\ Vous voyez ? c'est très simple!
+        u2:(Au revoir)\style=joyful\ Au revoir mon amis!\pau=200\ Bonne journée!$onStopped=1 
+        u2:(~finir) Au revoir! \pau=200\ Bonne journée!$onStopped=1 
+
+u:(~goodbye)\style=joyful\ Au revoir mon amis!\pau=200\ Bonne journée!$onStopped=1 
+u:(~finir) Au revoir! \pau=200\ Bonne journée!$onStopped=1

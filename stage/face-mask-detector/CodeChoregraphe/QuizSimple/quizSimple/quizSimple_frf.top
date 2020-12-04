@@ -1,0 +1,186 @@
+topic: ~quizSimple()
+language: frf
+
+concept: (salutation) [bonjour Salut Coucou]
+concept: (prénom) [Pascal Patrick Linxue Quentin Hugo Lucas Alexis Théo]
+concept: (nombre) [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20]
+
+def:result($pts) ^first["$pts > 5 Bravo! Vous gagnez $pts sur 10 points en total" "Vous gagnez $pts sur 10 points en total. Bon courage!"]
+
+u: (e:onStart) ~salutation \pau = 200\^nextProposal
+u:(quitter) $onStopped=1
+
+proposal: %QuestionsMath Veuillez jouer un jeux de quiz avec moi \pau=200\ je vais vous poser 10 questions! \pau=200\ \style=joyful\ Vous êtes prêt? $value1=0
+    u1:(Oui)\style=neutral\ \pau=200\ ^start(photo01-fa07d3/behavior_cfr3) Trois.\pau=200\ ^stop(photo01-fa07d3/behavior_cfr3) ^start(photo01-fa07d3/behavior_cfr2) Deux.\pau=200\ ^stop(photo01-fa07d3/behavior_cfr2) ^start(photo01-fa07d3/behavior_cfr1) Un.\pau=200\^stop(photo01-fa07d3/behavior_cfr1) \style=joyful\ ^start(photo01-fa07d3/behavior_1) On commmence! ^stop(photo01-fa07d3/behavior_1) Votre point d'origine est $value1 ^nextProposal
+    u1:(Non) \style=joyful\ Allez! Allez! ^gotoReactivate(QuestionsMath)
+
+proposal: %QuestionsMath %Q1 \style=neutral\ \pau=200\ Question 1. Quelle est la moitié de quatorze?
+    u1:(7) \style=joyful\Bravo! Vous gagnez 1 point! \pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(e:Dialog/NoOneSpeak5) je répète cette question. ^goto(Q1)
+    u1:(_[0 1 2 3 4 5 6 8 9 10 11 12 13 14 15]) Non, c'est 7. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est 7. ^nextProposal
+    
+    
+proposal: %QuestionsMath %Q2 \style=neutral\ \pau=200\ Question 2. Quel est le tiers de 9
+    u1:(3) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[0 1 2 4 5 6 7 8 9 10 11 12 13 14 15]) Non, c'est 3. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est 3. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q2)
+
+proposal: %QuestionsMath %Q3 \style=neutral\\pau=200\ Question 3. Combien font 13 moins 3
+    u1:(10) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[0 1 2 3 4 5 6 7 8 9 11 12 13 14 15]) Non, c'est 10. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est 10. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q3)
+
+proposal: %QuestionsMath %Q4 \style=neutral\\pau=200\ Question 4. Combien font 7 plus 8
+    u1:(15) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 16 17 18 19 20]) Non, c'est 15. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est 15. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q4)
+    
+proposal: %QuestionsMath %Q5 \style=neutral\\pau=200\ Question 5. Combien dont 3 fois 0?
+    u1:(0) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[1 2 3 4 5 6 7 8 9 10 11 12 13 14 16 17 18 19 20]) Non, c'est 0. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est 0. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q5)
+    
+proposal: %QuestionsMath %Q6 \style=neutral\\pau=200\ Question 6. Quel est l'hymne national de la France?
+    u1:(la Marseillaise) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est la Marseillaise. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q6)
+
+proposal: %QuestionsMath %Q7 \style=neutral\\pau=200\ Question 7. Quelle est la capitale de l'Italie
+    u1:(Rome) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est la Rome. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q7)
+    u1:(e:Dialog/NoOneSpeak20)je répète cette question. ^goto(Q7)
+proposal: %QuestionsMath %Q8 \style=neutral\\pau=200\ Question 8. Quel est le quart de 5 plus 3?
+    u1:(2) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[1 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20]) Non, c'est  2. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est 2. ^nextProposal
+    u1:(e:Dialog/NoOneSpeak20)je répète cette question. ^goto(Q8)
+    
+proposal: %QuestionsMath %Q9 \style=neutral\\pau=200\ Question 9. Quel est le double de 3?
+    u1:(6) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[1 2 3 4 5 7 8 9 10 11 12 13 14 15 16 17 18 19 20]) Non, c'est  6. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est 6. ^nextProposal
+    u1:(e:Dialog/NoOneSpeak20)je répète cette question. ^goto(Q9)
+    
+proposal: %QuestionsMath %Q10 \style=neutral\\pau=200\ La dernière question.\pau=100\ Il y a combien de jours dans une semaine?
+    u1:(7) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[1 2 3 4 5 6 8 9 10 11 12 13 14 15 16 17 18 19 20]) Non, c'est 7. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est 7. ^nextProposal
+    u1:(e:Dialog/NoOneSpeak20)je répète cette question. ^goto(Q10)
+proposal: %resultat \style=neutral\ \pau=200\ ^result($value1) ^nextProposal
+proposal: %Saluer \style=joyful\ \pau=200\ Bonne journée! \style=joyful\ Au revoir.$onStopped=1

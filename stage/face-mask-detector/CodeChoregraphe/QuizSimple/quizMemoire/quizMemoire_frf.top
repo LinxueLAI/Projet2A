@@ -1,0 +1,210 @@
+topic: ~quizMemoire()
+language: frf
+
+concept: (salutation) [Salut Coucou]
+concept: (prénom) [Pascal Patrick Linxue Quentin Hugo Lucas Alexis Théo]
+concept:(chat) [chat "c'est un chat" "un chat"]
+concept:(chien) [chien "c'est un chien" "un chien"]
+concept:(lion) [lion "c'est un lion" "un lion"]
+concept:(tigre) [tigre "c'est un tigre" "un tigre"]
+concept:(éléphant) [éléphant "c'est un éléphant" "un éléphant"]
+concept:(lapin) [lapin "c'est un lapin" "un lapin"]
+concept:(Macron) [Emmanuel Macron "Emmanuel Macron" "il est Emmanuel Macron" "c'est Emmanuel Macron"]
+concept:(Reno) [Jean Reno "Jean Reno" "Il est Jean Reno"]
+concept:(panda) [panda "{c'est} un panda"]
+concept:(Sophie) [Sophie Marceau "Sophie Marceau" "{elle est} Sophie Marceau"]
+
+def:result($pts) ^first["$pts > 5 Bravo! Vous gagnez $pts sur 10 points en total" "Vous gagnez $pts sur 10 points en total. Bon courage!"]
+
+u: (e:onStart) ~salutation \pau = 200\^nextProposal
+u:(quiter) $onStopped=1
+
+proposal: %QuestionsMath Veuillez faire un jeux de quiz memoire avec moi.\pau=200\ je vais vous poser 10 questions! \pau=200\ \style=joyful\ Vous êtes prêt? $value1=0
+    u1:(Oui)\style=neutral\ \pau=200\ ^start(photo01-fa07d3/behavior_cfr3) Trois \pau=200\ ^stop(photo01-fa07d3/behavior_cfr3) ^start(photo01-fa07d3/behavior_cfr2) Deux \pau=200\ ^stop(photo01-fa07d3/behavior_cfr2) ^start(photo01-fa07d3/behavior_cfr1) Un.\pau=200\^stop(photo01-fa07d3/behavior_cfr1) \style=joyful\ ^start(photo01-fa07d3/behavior_1) On commmence! ^stop(photo01-fa07d3/behavior_1) Votre point d'origine est $value1 ^nextProposal
+    u1:(Non) \style=joyful\ Allez! Allez! ^gotoReactivate(QuestionsMath)
+
+proposal: %QuestionsMath %Q1 \style=neutral\ \pau=200\ ^start(animations/Stand/Gestures/ShowTablet_1)Veuillez regarder ma tablette.^wait(animations/Stand/Gestures/ShowTablet_1) ^start(photo01-fa07d3/behavior_chat) Question 1. Quel est cet animal? ^stop(photo01-fa07d3/behavior_chat)
+    u1:(~chat) \style=joyful\Bravo! Vous gagnez 1 point! \pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chien lion tigre lapin elephant Macron Reno Sophie panda]) Non, c'est un chat. ^nextProposal
+    u1:(Je ne sais pas) c'est un chat. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est un chat. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q1)
+    
+proposal: %QuestionsMath %Q2 \style=neutral\ \pau=200\ ^start(animations/Stand/Gestures/ShowTablet_2) ^wait(animations/Stand/Gestures/ShowTablet_2) ^start(photo01-fa07d3/behavior_chien) Question 2. Quel est cet animal? ^stop(photo01-fa07d3/behavior_chien)
+    u1:(~chien) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lion tigre lapin elephant Macron Reno Sophie panda]) Non, c'est un chien. ^nextProposal
+    u1:(Je ne sais pas) c'est un chien. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est un chien. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q2)
+
+proposal: %QuestionsMath %Q3 \style=neutral\\pau=200\ ^start(animations/Stand/Gestures/ShowTablet_3) ^wait(animations/Stand/Gestures/ShowTablet_3) ^start(photo01-fa07d3/behavior_elephant) Question 3. Quel est cet animal? ^stop(photo01-fa07d3/behavior_elephant)
+    u1:(~éléphant) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lion tigre lapin chien Macron Reno Sophie panda]) Non, c'est un un éléphant. ^nextProposal
+    u1:(Je ne sais pas) c'est un éléphant. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est un éléphant. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q3)
+
+proposal: %QuestionsMath %Q4 \style=neutral\\pau=200\ ^start(animations/Stand/Gestures/ShowTablet_1) ^wait(animations/Stand/Gestures/ShowTablet_1) ^start(photo01-fa07d3/behavior_lapin) Question 4. Quel est cet animal? ^stop(photo01-fa07d3/behavior_lapin)
+    u1:(~lapin) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lion tigre éléphant chien Macron Reno Sophie panda]) Non, ça devrait être un lapin. ^nextProposal
+    u1:(Je ne sais pas) c'est un lapin. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est un lapin. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q4)
+
+proposal: %QuestionsMath %Q5 \style=neutral\\pau=200\ ^start(animations/Stand/Gestures/ShowTablet_1) ^wait(animations/Stand/Gestures/ShowTablet_1) ^start(photo01-fa07d3/behavior_lion) Question 5. Quel est cet animal? ^stop(photo01-fa07d3/behavior_lion)
+    u1:(~lion) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lapin tigre éléphant chien Macron Reno Sophie panda]) Non, c'est un lion. ^nextProposal
+    u1:(Je ne sais pas) c'est un lion. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est un lion. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q5)
+
+proposal: %QuestionsMath %Q6 \style=neutral\\pau=200\  ^start(animations/Stand/Gestures/ShowTablet_1) ^wait(animations/Stand/Gestures/ShowTablet_1) ^start(photo01-fa07d3/behavior_panda) Question 6. Quel est cet animal? ^stop(photo01-fa07d3/behavior_panda)
+    u1:(~panda) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lapin tigre éléphant chien Macron Reno Sophie lion]) Non, c'est un panda. ^nextProposal
+    u1:(Je ne sais pas) c'est un panda. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est un panda. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q6)
+
+proposal: %QuestionsMath %Q7 \style=neutral\\pau=200\ ^start(animations/Stand/Gestures/ShowTablet_1) ^wait(animations/Stand/Gestures/ShowTablet_1) ^start(photo01-fa07d3/behavior_tigre) Question 7. Quel est cet animal? ^stop(photo01-fa07d3/behavior_tigre)
+    u1:(~tigre) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lapin panda éléphant chien Macron Reno Sophie lion]) Non, c'est un tigre. ^nextProposal
+    u1:(Je ne sais pas) c'est un tigre. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, c'est un tigre. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q7)
+    
+proposal: %QuestionsMath %Q8 \style=neutral\\pau=200\ ^start(animations/Stand/Gestures/ShowTablet_1) ^wait(animations/Stand/Gestures/ShowTablet_1) ^start(photo01-fa07d3/behavior_Macron) Question 8. Qui est-il? ^stop(photo01-fa07d3/behavior_Macron)
+    u1:(~Macron) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lapin panda éléphant chien Reno Sophie lion]) Non, il est Emmanuel Macron. ^nextProposal
+    u1:(Je ne sais pas) il est Emmanuel Macron. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, il est Emmanuel Macron. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q8)
+    
+proposal: %QuestionsMath %Q9 \style=neutral\\pau=200\ ^start(animations/Stand/Gestures/ShowTablet_1) ^wait(animations/Stand/Gestures/ShowTablet_1) ^start(photo01-fa07d3/behavior_Reno) Question 9. Qui est-il? ^stop(photo01-fa07d3/behavior_Reno)
+    u1:(~Reno) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lapin panda éléphant chien Sophie lion]) Non, il est Jean Reno. ^nextProposal
+    u1:(Je ne sais pas) il est Jean Reno. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, il est Jean Reno. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q9)
+    
+proposal: %QuestionsMath %Q10 \style=neutral\\pau=200\ ^start(animations/Stand/Gestures/ShowTablet_1) ^wait(animations/Stand/Gestures/ShowTablet_1) ^start(photo01-fa07d3/behavior_Sophie) Question 10. Qui est-elle? ^stop(photo01-fa07d3/behavior_Sophie)
+    u1:(~Sophie) \style=joyful\Bravo! Vous gagnez 1 point!\pau=200\ vous avez
+#\style=joyful\ Bravo! Vous gagnez 1 point ! Vous avez
+%script
+value1 = ALMemory.getData("value1")
+try:
+    value1 = int(value1)+1
+    ALMemory.insertData("value1",value1)
+except Exception:
+    pass
+print value1
+%script
+points maintenant ^nextProposal
+    u1:(_[chat lapin panda éléphant chien lion]) Non, elle est Sophie Marceau. ^nextProposal
+    u1:(Je ne sais pas) elle est Sophie Marceau. ^nextProposal
+    u1:(e:Dialog/NotUnderstood) \style=neutral\ Non, elle est Sophie Marceau. ^nextProposal
+    u1:(e:NoOneSpeaks20) je répète cette question. ^goto(Q10)
+proposal: %resultat \style=neutral\ \pau=200\ ^start(photo01-fa07d3/behavior_fini) ^result($value1) ^stop(photo01-fa07d3/behavior_fini)^nextProposal
+
+proposal: %Saluer \style=joyful\ \pau=200\ Bonne journée! Au revoir.
+    u1:(au revoir) $onStopped=1
+    
+u:(au revoir) \style=joyful\ \pau=200\ Bonne journée! Au revoir$onStopped=1

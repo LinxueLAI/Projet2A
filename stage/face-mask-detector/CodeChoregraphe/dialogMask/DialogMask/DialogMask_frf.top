@@ -1,0 +1,33 @@
+topic: ~DialogMask()
+language: frf
+
+# Defining extra concepts out of words or group of words
+concept:(NoMasque) [oui "je l'ai oublié"]
+concept:(WithMasque) [non "j'ai {déjà} {porté} [un mon le] masque"]
+concept:(ok)[d'accord okay "Au revoir"]
+concept:(hello)[Bonjour salut coucous]
+# Catching inputs and triggering outputs
+#u:(e:onStart) $onStopped=1
+u:(e:onStart) \style=joyful\ ^start(animations/Stand/Gestures/Salute_3)Bonjour! ^wait(animations/Stand/Gestures/Salute_3) ^nextProposal
+
+# Replying to speech
+u:(~hello) \style=joyful\ ^start(animations/Stand/Gestures/Salute_3)Bonjour! ^wait(animations/Stand/Gestures/Salute_3) ^nextProposal
+u:(quitter)ok.\style=neutral\ $onStopped=1
+
+#u:(e:input) ^goto(ASK_MASK)
+proposal: %ASK_MASK  \style=neutral\ ^start(animations/Stand/Emotions/Neutral/Stubborn_1)Vous avez oubilé de porter votre masque? ^stop(animations/Stand/Emotions/Neutral/Stubborn_1)
+    u1:(~NoMasque) avez-vous assez de masque?
+        u2:(oui) super! Il faut changer votre masque toutes les quatres heures. \pau=200\^goto(BUY_MASK)
+        u2:(non) ^goto(BUY_MASK)
+    u1:(~WithMasque) Très bien!\vct=100\ N'oubliez pas de garder une certaine distance entre les gens!^nextProposal
+
+proposal: %BUY_MASK est-ce que vous savez \pau=200\ dans quel endroit on peut acheter les masques?
+    u1:(Oui) super! n'oubliez pas que vous devez porter un masque dans les endroits bondés,comme dans un tramway, ou bien dans un magasin!
+        u2:(merci) \vct=120\\style=joyful\ De rien! ^start(animations/Stand/Gestures/Salute_3) Au revoir! ^wait(animations/Stand/Gestures/Salute_3) $onStopped=1
+        u2:(~ok) \vct=120\\style=joyful\^start(animations/Stand/Gestures/Salute_3) Au revoir! ^wait(animations/Stand/Gestures/Salute_3) $onStopped=1
+    u1:(non) Vous inquietez pas! vous pouvez l'acheter dans un supermarché ou bien une pharmacie!
+        u2:(merci) \vct=120\\style=joyful\ De rien! \pau=200\ ^start(animations/Stand/Gestures/Salute_3) Au revoir! ^wait(animations/Stand/Gestures/Salute_3) $onStopped=1
+        u2:(~ok) \vct=120\\style=joyful\^start(animations/Stand/Gestures/Salute_3) Au revoir! ^wait(animations/Stand/Gestures/Salute_3) $onStopped=1
+        
+u:(merci)\vct=120\\style=joyful\ De rien! ^start(animations/Stand/Gestures/Salute_3) Au revoir!  \style=neutral\ ^wait(animations/Stand/Gestures/Salute_3) $onStopped=1
+u:(~ok)\vct=120\\style=joyful\^start(animations/Stand/Gestures/Salute_3) Au revoir! \style=neutral\ ^wait(animations/Stand/Gestures/Salute_3) $onStopped=1
